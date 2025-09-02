@@ -1,6 +1,6 @@
 ## 🚀 PASOS PARA INICIAR EL PROYECTO
 
-1. **Clonar el repositorio** dentro de la carpeta `laragon/www` hacemos clickderecho y seleccionamos git bash here donde ingresaremos el siguiente comando:  
+1. **Clonar el repositorio** dentro de la carpeta `laragon/www` hacemos click derecho y seleccionamos git bash here donde ingresaremos el siguiente comando:  
    ```
    git clone <url del repositorio>
    ```
@@ -37,4 +37,4 @@ mkdir -p writable/cache writable/logs writable/session writable/uploads writable
 ```
 5. Vista del Proyecto
 - Al haber realizado todos los pasos anteriores, procedemos a darle al boton de **Iniciar Todo** de laragon.
-- Por ultimo, ingresamos la ruta de nuestro proyecto 'http://yonda1.test/'.
+- Por ultimo, ingresamos la ruta de nuestro proyecto 'http://yonda1.test/' en nuestro navegador.
