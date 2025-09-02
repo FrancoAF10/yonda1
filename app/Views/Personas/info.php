@@ -11,12 +11,12 @@
           <div class="col-md-4">
             <p><b>NOMBRE:</b>
               <?= $trabajador['apepaterno'] . ' ' . $trabajador['apematerno'] . ' ' . $trabajador['nombres'] ?></p>
-            <p><b>DNI:</b> <?= $trabajador['fechanac'] ?></p>
+            <p><b>FECHA DE NACIMIENTO:</b> <?= $trabajador['fechanac'] ?></p>
             <p><b>GÉNERO:</b> <?= $trabajador['genero'] ?></p>
           </div>
           <div class="col-md-4">
             <p><b>TIPO DE DOCUMENTO:</b> <?= $trabajador['tipodoc'] ?></p>
-            <p><b>NUMERO DE DOCUMENTO:</b> <?= $trabajador['numdoc'] ?></p>
+            <p><b>N° DE DOCUMENTO:</b> <?= $trabajador['numdoc'] ?></p>
             <p><b>ESTADO CIVIL:</b> <?= $trabajador['estadocivil'] ?></p>
           </div>
           <div class="col-md-4">
