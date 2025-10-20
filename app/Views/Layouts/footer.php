@@ -13,6 +13,19 @@
     </div>
   </footer>
 
+  
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      if (html.getAttribute("data-bs-theme") === "light") {
+        html.setAttribute("data-bs-theme", "dark");
+      } else {
+        html.setAttribute("data-bs-theme", "light");
+      }
+    }
+
+  </script>
+
   <!-- [Page Specific JS] start -->
   <!-- <script src="../assets/js/plugins/apexcharts.min.js"></script> -->
   <!-- <script src="../assets/js/pages/dashboard-default.js"></script> -->
@@ -24,6 +37,8 @@
   <script src="<?= base_url('assets/js/fonts/custom-font.js') ?>"></script>
   <script src="<?= base_url('assets/js/pcoded.js') ?>"></script>
   <script src="<?= base_url('assets/js/plugins/feather.min.js') ?>"></script>
+  <!--Full Calendar-->
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
 
   <!--<script>layout_change('light');</script>-->
    <!--<script>change_box_container('false');</script>-->

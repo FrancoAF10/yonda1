@@ -1,281 +1,269 @@
 <?php
 namespace App\Controllers;
 use App\Controllers\BaseController;
+use App\Models\CargaFamiliar;
+use App\Models\NumeroCuenta;
 use App\Models\Personas;
 use App\Models\Departamentos;
-use App\Models\Provincias;
-use App\Models\Distritos;
-use App\Models\Sucursal;
 use App\Models\Contratos;
-use App\Models\Areas;
-use App\Models\Cargos;
+use App\Models\SistemaPensiones;
+use App\Models\Sucursal;
+use App\Models\Asistencia;
+
+use DateTime;
 
 
-class PersonasController extends BaseController {
+class PersonasController extends BaseController
+{
 
+  public function index()
+  {
+    $personas = new Personas();
+    $datos['listarpersonas'] = $personas->Vista_Empleados();
+    $datos['header'] = view("Layouts/header");
+    $datos['footer'] = view("Layouts/footer");
+    return view("personas/index", $datos);
+  }
+  public function search()
+  {
+    $datos['header'] = view('Layouts/header');
+    $datos['footer'] = view('Layouts/footer');
+    return view('personas/search', $datos);
+  }
+  public function searchDNIPersonas($numdoc = null)
+  {
+    $persona = new Personas();
+    $this->response->setContentType('application/json');
 
+    if (empty($numdoc)) {
+      return $this->response->setJSON([
+        'success' => false,
+        'mensaje' => 'Debe indicar el Número de documento'
+      ]);
+    }
 
-  public function index(){
-      $personas=new Personas();
-      $datos['listarpersonas']=$personas->Vista_Empleados();
-      $datos['header'] = view("Layouts/header");
-      $datos['footer'] = view("Layouts/footer");
-      return view("personas/index", $datos);
+    $registro = $persona->where('numdoc', $numdoc)->first();
+
+    if (!$registro) {
+      return $this->response->setJSON([
+        'success' => false,
+        'mensaje' => 'No se encontraron registros'
+      ]);
+    }
+
+    return $this->response->setJSON([
+      'success' => true,
+      'idpersona' => $registro['idpersona'],
+      'nombres' => $registro['nombres'],
+      'apepaterno' => $registro['apepaterno'],
+      'apematerno' => $registro['apematerno'],
+      'numdoc' => $registro['numdoc']
+    ]);
   }
 
-  public function registrar(){
-    $personas=new Personas();
-    $data=[
-      'apepaterno'=>$this->request->getPost('apepaterno'),
-      'apematerno'=>$this->request->getPost('apematerno'),
-      'nombres'=>$this->request->getPost('nombres'),
-      'fechanac'=>$this->request->getPost('fechanac'),
-      'genero'=>$this->request->getPost('genero'),
-      'estadocivil'=>$this->request->getPost('estadocivil'),
-      'tipodoc'=>$this->request->getPost('tipodoc'),
-      'numdoc'=>$this->request->getPost('numdoc'),
-      'direccion'=>$this->request->getPost('direccion'),
-      'referencia'=>$this->request->getPost('referencia'),
-      'telefono'=>$this->request->getPost('telefono'),
-      'email'=>$this->request->getPost('email'),
-      'iddistrito'=>$this->request->getPost('iddistrito'),
-      'idsucursal'=>$this->request->getPost('idsucursal'),
-      'idarea'=>$this->request->getPost('idarea'),
-      'idcargo'=>$this->request->getPost('idcargo'),
-      'fechainicio'=>$this->request->getPost('fechainicio'),
-      'fechafin'=>$this->request->getPost('fechafin'),
-      'sueldobase'=>$this->request->getPost('sueldobase'),
-      'toleranciadiaria'=>$this->request->getPost('toleranciadiaria'),
-      'toleranciamensual'=>$this->request->getPost('toleranciamensual')
-    ];
-    $personas->RegistrarEmpleado($data);
-    return redirect()->to(base_url("personas"))->with( 'mensaje','Registrado');
-        
-  }
 
-  public function select()
+  public function crear()
   {
     $departamentos = new Departamentos();
-    $areas = new Areas();
-
+    $sucursal = new Sucursal();
+    //Para dirección de las personas
     $datos['departamentos'] = $departamentos->orderBy('iddepartamento', "ASC")->findAll();
-    $datos['areas'] = $areas->orderBy('idarea', "ASC")->findAll();
+    //Para la dirección de la Sucursal
+    $datos['sucursal'] = $sucursal->orderBy('idsucursal', "ASC")->findAll();
+    //para mostrar datos de cuenta bancaria dentro del registro
 
     $datos['header'] = view('Layouts/header');
     $datos['footer'] = view('Layouts/footer');
     //index es el nombre del archivo que está en al carpeta views
-    return view('Personas/registrar',    $datos);
+    return view('Personas/registrar', $datos);
   }
 
-  public function provincias(){
-    $provincias=new Provincias();
-    $json= $this->request->getJSON();
-    log_message('debug', 'JSON recibido: '.json_encode($json));
 
-    $iddepartamento=$json->iddepartamento ?? null;
-
-    if(!$iddepartamento){return $this->response->setJSON([]);}
-
-    $data=$provincias
-      ->where('iddepartamento',$iddepartamento)
-      ->orderBy('provincia','ASC')
-      ->findAll();
-      return $this->response->setJSON($data);
-  }
-    
-  public function distritos(){
-    $distritos=new Distritos();
-    $json=$this->request->getJSON();
-    $idprovincia=$json->idprovincia ?? null;
-
-    if(!$idprovincia){
-      return $this->response->setJSON([]);
-    }
-
-    $data=$distritos->where('idprovincia',$idprovincia)
-    ->orderBy('distrito','ASC')
-    ->findAll();
-
-    return $this->response->setJSON($data);
-  }
-  public function sucursales()
+  public function registrar()
   {
-      $sucursales = new Sucursal();
-      $json = $this->request->getJSON();
-      $iddistrito = $json->iddistrito ?? null;
-
-      if (!$iddistrito) {
-          return $this->response->setJSON([]);
-      }
-
-      $data = $sucursales->where('iddistrito', $iddistrito)
-                        ->orderBy('sucursal', 'ASC')
-                        ->findAll();
-
-
-      return $this->response->setJSON($data);
-  }
-
-  public function areas()
-  {
-      $areas = new Areas();
-      $json = $this->request->getJSON();
-      $idsucursal = $json->idsucursal ?? null;
-
-      if (!$idsucursal) {
-          return $this->response->setJSON([]);
-      }
-
-      $data = $areas->where('idsucursal', $idsucursal)
-                    ->orderBy('area', 'ASC')
-                    ->findAll();
-      return $this->response->setJSON($data);
-  }
-
-  public function cargos()
-  {
-    $cargo = new Cargos();
-    $json  = $this->request->getJSON();
-    $idarea = $json->idarea ?? null;
-
-    if (!$idarea) {
-      return $this->response->setJSON([]);
-    }
-
-    $data = $cargo->where('idarea', $idarea)
-            ->orderBy('cargo', 'ASC')
-            ->findAll();
-    return $this->response->setJSON($data);
-  }   
-
-  public function editar($idpersona = null)
-    {
     $personas = new Personas();
-    $departamentos= new Departamentos();
-    $provincias = new Provincias();
-    $distritos = new Distritos();
-    $sucursales = new Sucursal();
-    $areas    = new Areas();
-    $cargos= new Cargos();
-    $contratos= new Contratos();
-      
-    $datos['personas'] = $personas->find($idpersona);
 
-    $datos['contrato']=$contratos->where('idpersona',$idpersona)->first();
-    //DATOS PERSONALES
-    $datosDistrito=$distritos->find($datos['personas']['iddistrito']);
-    $idprovinciaP=$datosDistrito['idprovincia'];
-
-    $datosProvincia=$provincias->find($idprovinciaP);
-    $iddepartamentoP=$datosProvincia['iddepartamento'];
-
-    $datos['iddepartamentoP']=$iddepartamentoP;
-    $datos['idprovinciaP']=$idprovinciaP;
+    // Captura de variables
+    $apepaterno = $this->request->getVar('apepaterno');
+    $apematerno = $this->request->getVar('apematerno');
+    $nombres = $this->request->getVar('nombres');
+    $fechanac = $this->request->getVar('fechanac');
+    $genero = $this->request->getVar('genero');
+    $estadocivil = $this->request->getVar('estadocivil');
+    $tipodoc = $this->request->getVar('tipodoc');
+    $numdoc = $this->request->getVar('numdoc');
+    $direccion = $this->request->getVar('direccion');
+    $referencia = $this->request->getVar('referencia');
+    $telefono = $this->request->getVar('telefono');
+    $email = $this->request->getVar('email');
+    $iddistrito = $this->request->getVar('iddistrito');
 
 
-    $datos['departamentosP'] = $departamentos->findAll();
-    
-    $datos['provinciasP']=$provincias
-                          ->where('iddepartamento',$iddepartamentoP)
-                          ->findAll();
-    $datos['distritosP']=$distritos
-                        ->where('idprovincia',$idprovinciaP)
-                        ->findAll();
+    // Validar edad
+    $edad = (new DateTime())->diff(new DateTime($fechanac))->y;
+    if ($edad < 18) {
+      return redirect()->back()->withInput()->with('error', 'El empleado debe ser mayor de 18 años');
+    }
 
-      if($datos['contrato']){
-        $cargo=$cargos->find($datos['contrato']['idcargo']);
-        $idarea=$cargo['idarea'];
+    // Validar duplicado de DNI
+    if ($personas->where('numdoc', $numdoc)->first()) {
+      return redirect()->back()->withInput()->with('error', 'El número de documento ya está registrado');
+    }
 
-        $area=$areas->find($idarea);
-        $idsucursal=$area['idsucursal'];
+    // Datos a insertar
+    $data = [
+      'apepaterno' => $apepaterno,
+      'apematerno' => $apematerno,
+      'nombres' => $nombres,
+      'fechanac' => $fechanac,
+      'genero' => $genero,
+      'estadocivil' => $estadocivil,
+      'tipodoc' => $tipodoc,
+      'numdoc' => $numdoc,
+      'direccion' => $direccion,
+      'referencia' => $referencia,
+      'telefono' => $telefono,
+      'email' => $email,
+      'iddistrito' => $iddistrito
+    ];
 
-        $sucursal=$sucursales->find($idsucursal);
-        $iddistritoC=$sucursal['iddistrito'];
+    if (!$personas->insert($data)) {
+      return redirect()->back()->withInput()->with('error', 'Error al registrar la persona');
+    }
 
-        $provinciaC=$provincias->find($distritos->find($iddistritoC)['idprovincia']);
-        $iddepartamentoC=$provinciaC['iddepartamento'];
+    return redirect()->to(base_url('personas/buscarpersona'))->with('success', 'Registro exitoso');
+  }
 
-        $datos['idcargoC']=$cargo['idcargo'];
-        $datos['idareaC']=$idarea;
-        $datos['idsucursalC']=$idsucursal;
-        $datos['iddistritoC']=$iddistritoC;
-        $datos['idprovinciaC']=$provinciaC['idprovincia'];
-        $datos['iddepartamentoC']=$iddepartamentoC;
-        
-        $datos['areasC']=$areas->where('idsucursal',$idsucursal)->findAll();
-        $datos['cargosC']=$cargos->where('idarea',$idarea)->findAll();
-        $datos['sucursalesC']=$sucursales->where('iddistrito',$iddistritoC)->findAll();
-        $datos['provinciasC']=$provincias->where('iddepartamento',$iddepartamentoC)->findAll();
-        $datos['distritosC']=$distritos->where('idprovincia',$provinciaC['idprovincia'])->findAll();
-        $datos['departamentosC']=$departamentos->findAll();
 
-      }
+  public function info($idpersona)
+  {
+    $personas = new Personas();
+    $contratos = new Contratos();
+    $asistencia = new Asistencia();
+
+    $datos['tiemporestante'] = $contratos->Vista_dias_restantes($idpersona);
+    $datos['trabajador'] = $personas->Vista_Info($idpersona);
+    $datos['contratosVencido'] = $contratos->getHistorialContratosVencidos($idpersona);
+    $datos['asistenciapersona'] = $asistencia->Vista_Asistenciapersona($idpersona);
 
 
     $datos['header'] = view("Layouts/header");
     $datos['footer'] = view("Layouts/footer");
-    return view("personas/editar", $datos);
+    return view("personas/info", $datos);
   }
-  public function actualizar()
+  public function calendar()
   {
-      $personas = new Personas();
-      $contratos = new Contratos();
+    $datos['header'] = view("Layouts/header");
+    $datos['footer'] = view("Layouts/footer");
+    return view("personas/calendar", $datos);
+  }
+  public function calendarData()
+  {
+    $personas = new Personas();
+    $empleados = $personas->Vista_Empleados();
+    $eventos = [];
 
-      // Recibir datos personales
-      $idpersona = $this->request->getPost('idpersona');
-      $datosPersona = [
-          'apepaterno'   => $this->request->getPost('apepaterno'),
-          'apematerno'   => $this->request->getPost('apematerno'),
-          'nombres'      => $this->request->getPost('nombres'),
-          'fechanac'     => $this->request->getPost('fechanac'),
-          'genero'       => $this->request->getPost('genero'),
-          'estadocivil'  => $this->request->getPost('estadocivil'),
-          'tipodoc'      => $this->request->getPost('tipodoc'),
-          'numdoc'       => $this->request->getPost('numdoc'),
-          'direccion'    => $this->request->getPost('direccion'),
-          'referencia'   => $this->request->getPost('referencia'),
-          'telefono'     => $this->request->getPost('telefono'),
-          'email'        => $this->request->getPost('email'),
-          'iddistrito'   => $this->request->getPost('iddistrito')
+    foreach ($empleados as $e) {
+      // Evento fin de contrato
+      $eventos[] = [
+        'title' => 'Fin contrato: ' . $e['apepaterno'] . ' ' . $e['nombres'],
+        'start' => $e['fechafin'],
+        'color' => 'red'
       ];
 
-      // Actualizar persona
-      $personas->update($idpersona, $datosPersona);
+      // Evento cumpleaños (día y mes, pero para este año)
+      $fechaNacimiento = new DateTime($e['fechanac']);
+      $cumpleEsteAnio = date('Y') . '-' . $fechaNacimiento->format('m-d');
 
-      // Recibir datos de contrato
-      $datosContrato = [
-          'idsucursal'        => $this->request->getPost('idsucursal'),
-          'idarea'            => $this->request->getPost('idarea'),
-          'idcargo'           => $this->request->getPost('idcargo'),
-          'fechainicio'       => $this->request->getPost('fechainicio'),
-          'fechafin'          => $this->request->getPost('fechafin'),
-          'sueldobase'        => $this->request->getPost('sueldobase'),
-          'toleranciadiaria'  => $this->request->getPost('toleranciadiaria'),
-          'toleranciamensual' => $this->request->getPost('toleranciamensual')
+      $eventos[] = [
+        'title' => 'Cumpleaños: ' . $e['apepaterno'] . ' ' . $e['nombres'],
+        'start' => $cumpleEsteAnio,
+        'color' => 'blue'
       ];
+    }
 
-      // Actualizar contrato (suponiendo que siempre existe un contrato)
-      $contratoExistente = $contratos->where('idpersona', $idpersona)->first();
-
-      if ($contratoExistente) {
-          $contratos->update($contratoExistente['idcontrato'], $datosContrato);
-      } else {
-          // Si no existiera contrato, se podría crear uno nuevo
-          $datosContrato['idpersona'] = $idpersona;
-          $contratos->insert($datosContrato);
-      }
-
-      return redirect()->to(base_url('personas'))->with('mensaje', 'Datos actualizados correctamente');
+    return $this->response->setJSON($eventos);
   }
 
-  public function info($idpersona)
+  public function searchByDniAPI($dni = "")
   {
-      $personas = new Personas();
-      $datos['trabajador'] = $personas->Vista_Info($idpersona);
+    $api_endpoint = "https://api.decolecta.com/v1/reniec/dni?numero=" . $dni;
+    $api_token = "sk_10065.Hn9jgip17XG1y0ACJbKS715QeDjhmECl";
+    $content_type = "application/json";
 
-      $datos['header'] = view("Layouts/header");
-      $datos['footer'] = view("Layouts/footer");
-      return view("personas/info", $datos);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $api_endpoint);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+      "Content-Type:" . $content_type,
+      "Authorization: Bearer " . $api_token
+    ]);
+
+    //ejecutar la peticion
+    $api_response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($api_response === false) {
+      return $this->response->setJSON([
+        'success' => false,
+        'mensaje' => 'Error en la conexión a la API'
+      ]);
+    }
+    //Decodificar la respuesta JSON
+    $decoded_response = json_decode($api_response, true);
+    if ($http_code === 404) {
+      return $this->response->setJSON([
+        'success' => false,
+        'mensaje' => 'No se encontraro a la persona'
+      ]);
+    }
+    return $this->response->setJSON([
+      'success' => true,
+      'apepaterno' => $decoded_response['first_last_name'],
+      'apematerno' => $decoded_response['second_last_name'],
+      'nombres' => $decoded_response['first_name'],
+      'numerodoc' => $decoded_response['document_number']
+    ]);
   }
 
-}   
+  public function mostrardatos($idpersona = null)
+  {
+    $numerocuenta = new NumeroCuenta();
+    $asignacionfamiliar = new CargaFamiliar();
+    $sispensiones = new SistemaPensiones();
+    $personas = new Personas();
+
+    $persona = $personas->find($idpersona);
+    $datos['persona'] = $persona;
+
+    $datos['numcuenta'] = $numerocuenta->getnumerocuenta($idpersona);
+    $datos['sispensiones'] = $sispensiones->getsistemapensiones($idpersona);
+    $datos['cargafamiliar'] = $asignacionfamiliar->getcargafamiliar($idpersona);
+    $datos['header'] = view('Layouts/header');
+    $datos['footer'] = view('Layouts/footer');
+    return view('Personas/actualizaciones', $datos);
+  }
+
+  public function updatedata()
+  {
+    $personas = new Personas();
+    $datos = [
+      "apepaterno" => $this->request->getVar('apepaterno'),
+      "apematerno" => $this->request->getVar('apematerno'),
+      "nombres" => $this->request->getVar('nombres'),
+      "fechanac" => $this->request->getVar('fechanac'),
+      "genero" => $this->request->getVar('genero'),
+      "estadocivil" => $this->request->getVar('estadocivil'),
+      "tipodoc" => $this->request->getVar('tipodoc'),
+      "numdoc" => $this->request->getVar('numdoc'),
+      "direccion" => $this->request->getVar('direccion'),
+      "referencia" => $this->request->getVar('referencia'),
+      "telefono" => $this->request->getVar('telefono'),
+      "email" => $this->request->getVar('email'),
+    ];
+    $id = $this->request->getVar('idpersona');
+    $personas->update($id, $datos);
+    return $this->response->redirect(base_url('personas'));
+  }
+}

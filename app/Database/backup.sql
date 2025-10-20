@@ -7,6 +7,8 @@
 -- Server version: 8.4.3
 -- PHP Version: 8.3.16
 
+
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -2187,7 +2189,7 @@ CREATE TABLE `personas` (
   `tipodoc` enum('DNI','CEX','PASS') NOT NULL COMMENT 'CEX = Carnet de EXtrangeria ; PASS = Pasaporte',
   `numdoc` varchar(15) NOT NULL,
   `email` varchar(200) DEFAULT NULL,
-  `telefono` char(9) DEFAULT NULL,
+  `telefon  o` char(9) DEFAULT NULL,
   `direccion` varchar(40) NOT NULL,
   `referencia` varchar(30) NOT NULL,
   `estadocivil` enum('Soltero','Casado','Divorciado','Viudo','Separado','Conviviente') NOT NULL,

@@ -13,6 +13,12 @@ protected $table = 'cargos';
 protected $primaryKey = 'idcargo';
 
 //3. Campos operar
-protected $allowedFields = ['cargo'];
+protected $allowedFields = ['cargo','idarea'];
+
+    public function Vista_Cargos(){
+      $query =$this->db->query("SELECT * FROM mostrar_cargos");
+      return $query->getResultArray();
+    }
+
 
 }

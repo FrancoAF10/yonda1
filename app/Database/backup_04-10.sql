@@ -1,0 +1,2973 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.2
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost:3306
+-- Generation Time: Oct 04, 2025 at 01:27 PM
+-- Server version: 8.4.3
+-- PHP Version: 8.3.16
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `recursoshumanos`
+--
+CREATE DATABASE IF NOT EXISTS `recursoshumanos` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+USE `recursoshumanos`;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `areas`
+--
+
+CREATE TABLE `areas` (
+  `idarea` int NOT NULL,
+  `area` varchar(40) NOT NULL,
+  `idsucursal` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `areas`
+--
+
+INSERT INTO `areas` (`idarea`, `area`, `idsucursal`) VALUES
+(8, 'Atención al Cliente', 1),
+(12, 'Calidad', 1),
+(9, 'Compras', 1),
+(5, 'Contabilidad', 1),
+(6, 'Finanzas', 1),
+(11, 'Gerencia', 1),
+(14, 'Legal', 1),
+(4, 'Logística', 1),
+(2, 'Marketing', 1),
+(13, 'Producción', 1),
+(1, 'Recursos Humanos', 1),
+(10, 'Servicio Técnico', 1),
+(7, 'Sistemas', 1),
+(3, 'Ventas', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `asistencias`
+--
+
+CREATE TABLE `asistencias` (
+  `idasistencia` int NOT NULL,
+  `diamarcado` date NOT NULL,
+  `entrada` time DEFAULT NULL,
+  `iniciorefrigerio` time DEFAULT NULL,
+  `finrefrigerio` time DEFAULT NULL,
+  `salida` time DEFAULT NULL,
+  `minnolaborados` int DEFAULT NULL,
+  `tipoasistencia` enum('con goce','sin goce','permiso','inasistencia','regular') DEFAULT 'regular',
+  `idhorario` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `asistencias`
+--
+
+INSERT INTO `asistencias` (`idasistencia`, `diamarcado`, `entrada`, `iniciorefrigerio`, `finrefrigerio`, `salida`, `minnolaborados`, `tipoasistencia`, `idhorario`) VALUES
+(1, '2025-09-29', '17:56:51', '17:57:00', '17:57:01', '17:57:03', NULL, 'regular', 1),
+(2, '2025-10-01', '16:29:18', '17:11:21', '17:15:22', '17:15:51', NULL, 'regular', 3);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cargafamiliar`
+--
+
+CREATE TABLE `cargafamiliar` (
+  `idparentesco` int NOT NULL,
+  `parentesco` varchar(200) NOT NULL,
+  `evidencia` varchar(200) NOT NULL,
+  `idpersona` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `cargafamiliar`
+--
+
+INSERT INTO `cargafamiliar` (`idparentesco`, `parentesco`, `evidencia`, `idpersona`) VALUES
+(1, 'Hijo', 'Gráfico análisis matriz FODA  DAFO corporativo multicolor simple.pdf', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cargos`
+--
+
+CREATE TABLE `cargos` (
+  `idcargo` int NOT NULL,
+  `cargo` varchar(40) NOT NULL,
+  `idarea` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `cargos`
+--
+
+INSERT INTO `cargos` (`idcargo`, `cargo`, `idarea`) VALUES
+(30, 'Abogado Corporativo', 14),
+(14, 'Administrador de Sistemas', 7),
+(20, 'Analista de Compras', 9),
+(12, 'Analista Financiero', 6),
+(7, 'Asesor Comercial', 3),
+(29, 'Asesor Legal', 14),
+(11, 'Asistente Contable', 5),
+(24, 'Asistente de Gerencia', 11),
+(2, 'Asistente de Recursos Humanos', 1),
+(10, 'Contador General', 5),
+(3, 'Coordinador de Marketing', 2),
+(16, 'Desarrollador de Software', 7),
+(4, 'Diseñador Gráfico', 2),
+(6, 'Ejecutivo de Ventas', 3),
+(8, 'Encargado de Almacén', 4),
+(23, 'Gerente General', 11),
+(25, 'Inspector de Calidad', 12),
+(19, 'Jefe de Compras', 9),
+(26, 'Jefe de Control de Calidad', 12),
+(13, 'Jefe de Finanzas', 6),
+(1, 'Jefe de Recursos Humanos', 1),
+(5, 'Jefe de Ventas', 3),
+(27, 'Operario de Producción', 13),
+(17, 'Representante de Atención', 8),
+(18, 'Supervisor de Atención', 8),
+(9, 'Supervisor de Logística', 4),
+(28, 'Supervisor de Producción', 13),
+(22, 'Supervisor de Servicio', 10),
+(21, 'Técnico de Reparaciones', 10),
+(15, 'Técnico de Soporte', 7);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `contratos`
+--
+
+CREATE TABLE `contratos` (
+  `idcontrato` int NOT NULL,
+  `fechainicio` date NOT NULL,
+  `fechafin` date DEFAULT NULL,
+  `sueldobase` decimal(7,0) NOT NULL,
+  `toleranciadiaria` int NOT NULL,
+  `toleranciamensual` int NOT NULL,
+  `idpersona` int NOT NULL,
+  `idcargo` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `contratos`
+--
+
+INSERT INTO `contratos` (`idcontrato`, `fechainicio`, `fechafin`, `sueldobase`, `toleranciadiaria`, `toleranciamensual`, `idpersona`, `idcargo`) VALUES
+(1, '2025-09-29', '2025-10-29', 1000, 0, 0, 1, 23),
+(2, '2025-08-10', '2025-09-10', 1200, 0, 0, 2, 25),
+(3, '2025-09-12', '2025-09-15', 1200, 0, 0, 2, 25),
+(4, '2025-10-10', '2025-10-31', 1500, 0, 0, 4, 4),
+(5, '2025-09-20', '2025-10-30', 1200, 0, 0, 2, 25),
+(6, '2025-09-10', '2025-09-15', 1500, 0, 0, 5, 1),
+(7, '2025-09-20', '2025-10-15', 1500, 0, 0, 5, 1),
+(8, '2025-09-10', '2025-09-20', 1200, 0, 0, 6, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `departamentos`
+--
+
+CREATE TABLE `departamentos` (
+  `iddepartamento` int NOT NULL,
+  `departamento` varchar(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `departamentos`
+--
+
+INSERT INTO `departamentos` (`iddepartamento`, `departamento`) VALUES
+(1, 'Amazonas'),
+(2, 'Áncash'),
+(3, 'Apurímac'),
+(4, 'Arequipa'),
+(5, 'Ayacucho'),
+(6, 'Cajamarca'),
+(7, 'Callao'),
+(8, 'Cusco'),
+(9, 'Huancavelica'),
+(10, 'Huánuco'),
+(11, 'Ica'),
+(12, 'Junín'),
+(13, 'La Libertad'),
+(14, 'Lambayeque'),
+(15, 'Lima'),
+(16, 'Loreto'),
+(17, 'Madre de Dios'),
+(18, 'Moquegua'),
+(19, 'Pasco'),
+(20, 'Piura'),
+(21, 'Puno'),
+(22, 'San Martín'),
+(23, 'Tacna'),
+(24, 'Tumbes'),
+(25, 'Ucayali');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `distritos`
+--
+
+CREATE TABLE `distritos` (
+  `iddistrito` int NOT NULL,
+  `distrito` varchar(40) NOT NULL,
+  `idprovincia` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `distritos`
+--
+
+INSERT INTO `distritos` (`iddistrito`, `distrito`, `idprovincia`) VALUES
+(251, 'Abancay', 28),
+(111, 'Abelardo Pardo Lezameta', 12),
+(372, 'Acarí', 37),
+(190, 'Acas', 21),
+(773, 'Accha', 77),
+(554, 'Accomarca', 53),
+(1640, 'Achaya', 164),
+(399, 'Achoma', 39),
+(144, 'Aco', 16),
+(1059, 'Aco', 105),
+(234, 'Acobamba', 26),
+(825, 'Acobamba', 82),
+(1127, 'Acobamba', 110),
+(807, 'Acobambilla', 81),
+(109, 'Acochaca', 11),
+(444, 'Acocro', 43),
+(1080, 'Acolla', 107),
+(703, 'Acomayo', 69),
+(126, 'Acopampa', 13),
+(704, 'Acopia', 69),
+(1625, 'Acora', 163),
+(808, 'Acoria', 81),
+(705, 'Acos', 69),
+(445, 'Acos Vinchos', 43),
+(886, 'Acostambo', 87),
+(887, 'Acraquia', 87),
+(103, 'Aczo', 10),
+(1187, 'Agallpampa', 118),
+(1746, 'Agua Blanca', 178),
+(1848, 'Aguas Verdes', 192),
+(1146, 'Ahuac', 112),
+(888, 'Ahuaycha', 87),
+(97, 'Aija', 9),
+(1655, 'Ajoyani', 165),
+(1792, 'Alberto Leveau', 184),
+(433, 'Alca', 42),
+(542, 'Alcamenca', 52),
+(1866, 'Alexander Von Humboldt', 195),
+(235, 'Alfonso Ugarte', 26),
+(1414, 'Alis', 137),
+(1415, 'Allauca', 137),
+(1757, 'Alonso de Alvarado', 180),
+(1740, 'Alto Biavo', 177),
+(1811, 'Alto de la Alianza', 186),
+(1724, 'Alto Inambari', 174),
+(1002, 'Alto Laran', 100),
+(1447, 'Alto Nanay', 138),
+(758, 'Alto Pichigua', 75),
+(1751, 'Alto Saposoa', 179),
+(335, 'Alto Selva Alegre', 35),
+(1473, 'Alto Tapiche', 142),
+(1626, 'Amantani', 163),
+(906, 'Amarilis', 88),
+(127, 'Amashca', 13),
+(1396, 'Ambar', 135),
+(918, 'Ambo', 89),
+(1598, 'Amotape', 159),
+(1708, 'Ananea', 172),
+(1727, 'Anapia', 175),
+(711, 'Ancahuasi', 70),
+(490, 'Anchihuay', 47),
+(834, 'Anchonga', 83),
+(482, 'Anco', 47),
+(859, 'Anco', 85),
+(311, 'Anco_Huallo', 33),
+(1276, 'Ancón', 128),
+(678, 'Andabamba', 66),
+(826, 'Andabamba', 82),
+(385, 'Andagua', 38),
+(260, 'Andahuaylas', 29),
+(788, 'Andahuaylillas', 79),
+(1408, 'Andajes', 136),
+(1060, 'Andamarca', 105),
+(261, 'Andarapa', 29),
+(419, 'Andaray', 40),
+(902, 'Andaymarca', 87),
+(1494, 'Andoas', 144),
+(458, 'Andrés Avelino Cáceres Dorregaray', 43),
+(1223, 'Angasmarca', 122),
+(590, 'Anguia', 57),
+(151, 'Anra', 17),
+(128, 'Anta', 13),
+(710, 'Anta', 70),
+(827, 'Anta', 82),
+(280, 'Antabamba', 30),
+(1695, 'Antauta', 170),
+(1364, 'Antioquia', 134),
+(112, 'Antonio Raymondi', 12),
+(982, 'Aparicio Pomares', 98),
+(1081, 'Apata', 107),
+(384, 'Aplao', 38),
+(543, 'Apongo', 52),
+(113, 'Aquia', 12),
+(1329, 'Arahuay', 131),
+(23, 'Aramango', 2),
+(940, 'Arancay', 92),
+(1641, 'Arapa', 164),
+(1599, 'Arenal', 159),
+(334, 'Arequipa', 35),
+(846, 'Arma', 84),
+(823, 'Ascensión', 81),
+(1165, 'Ascope', 114),
+(1336, 'Asia', 132),
+(1642, 'Asillo', 164),
+(544, 'Asquipata', 52),
+(2, 'Asunción', 1),
+(562, 'Asunción', 54),
+(129, 'Ataquero', 13),
+(1082, 'Ataura', 107),
+(1352, 'Atavillos Alto', 133),
+(1353, 'Atavillos Bajo', 133),
+(1277, 'Ate', 128),
+(373, 'Atico', 37),
+(374, 'Atiquipa', 37),
+(1627, 'Atuncolla', 163),
+(1354, 'Aucallama', 133),
+(492, 'Aucara', 48),
+(847, 'Aurahua', 84),
+(1783, 'Awajun', 183),
+(1569, 'Ayabaca', 156),
+(443, 'Ayacucho', 43),
+(470, 'Ayahuanco', 46),
+(1656, 'Ayapata', 165),
+(870, 'Ayavi', 86),
+(1416, 'Ayaviri', 137),
+(1694, 'Ayaviri', 170),
+(483, 'Ayna', 47),
+(386, 'Ayo', 38),
+(1417, 'Azángaro', 137),
+(1639, 'Azángaro', 164),
+(22, 'Bagua', 2),
+(78, 'Bagua Grande', 7),
+(1741, 'Bajo Biavo', 177),
+(1458, 'Balsapuerto', 139),
+(3, 'Balsas', 1),
+(631, 'Bambamarca', 60),
+(1174, 'Bambamarca', 115),
+(145, 'Bambas', 16),
+(973, 'Baños', 97),
+(1318, 'Barranca', 129),
+(1489, 'Barranca', 144),
+(1278, 'Barranco', 128),
+(1758, 'Barranquita', 180),
+(531, 'Belén', 51),
+(1455, 'Belén', 138),
+(375, 'Bella Unión', 37),
+(635, 'Bellavista', 61),
+(689, 'Bellavista', 67),
+(1605, 'Bellavista', 160),
+(1739, 'Bellavista', 177),
+(1619, 'Bellavista de la Unión', 162),
+(1620, 'Bernal', 162),
+(661, 'Bolívar', 64),
+(1173, 'Bolívar', 115),
+(200, 'Bolognesi', 22),
+(1279, 'Breña', 128),
+(140, 'Buena Vista Alta', 15),
+(1588, 'Buenos Aires', 158),
+(1773, 'Buenos Aires', 182),
+(1202, 'Buldibuyo', 120),
+(199, 'Cabana', 22),
+(493, 'Cabana', 48),
+(1713, 'Cabana', 173),
+(400, 'Cabanaconde', 39),
+(1685, 'Cabanilla', 169),
+(1714, 'Cabanillas', 173),
+(1793, 'Cacatachi', 184),
+(225, 'Cáceres del Perú', 25),
+(574, 'Cachachi', 55),
+(1224, 'Cachicadan', 122),
+(712, 'Cachimayo', 70),
+(1418, 'Cacra', 137),
+(980, 'Cahuac', 98),
+(376, 'Cahuacho', 37),
+(1490, 'Cahuapanas', 144),
+(782, 'Caicay', 78),
+(1822, 'Cairani', 187),
+(828, 'Caja', 82),
+(573, 'Cajabamba', 55),
+(114, 'Cajacay', 12),
+(561, 'Cajamarca', 54),
+(191, 'Cajamarquilla', 21),
+(79, 'Cajaruro', 7),
+(1323, 'Cajatambo', 130),
+(152, 'Cajay', 17),
+(1183, 'Calamarca', 117),
+(1812, 'Calana', 186),
+(1337, 'Calango', 132),
+(1686, 'Calapuja', 169),
+(719, 'Calca', 71),
+(1397, 'Caleta de Carquin', 135),
+(1365, 'Callahuanca', 134),
+(401, 'Callalli', 39),
+(835, 'Callanmarca', 83),
+(688, 'Callao', 67),
+(617, 'Callayuc', 59),
+(1851, 'Calleria', 193),
+(662, 'Calquis', 64),
+(1734, 'Calzada', 176),
+(363, 'Camaná', 36),
+(789, 'Camanti', 79),
+(1823, 'Camilaca', 187),
+(1643, 'Caminaca', 164),
+(1768, 'Campanilla', 181),
+(44, 'Camporredondo', 5),
+(1852, 'Campoverde', 193),
+(545, 'Canaria', 52),
+(1258, 'Cañaris', 126),
+(477, 'Canayre', 46),
+(936, 'Canchabamba', 91),
+(1580, 'Canchaque', 157),
+(1083, 'Canchayllo', 107),
+(1821, 'Candarave', 187),
+(459, 'Cangallo', 44),
+(115, 'Canis', 12),
+(1846, 'Canoas de Punta Sal', 191),
+(1328, 'Canta', 131),
+(1628, 'Capachica', 163),
+(744, 'Capacmarca', 74),
+(288, 'Capaya', 31),
+(1672, 'Capazo', 167),
+(1474, 'Capelo', 142),
+(848, 'Capillas', 84),
+(1184, 'Carabamba', 117),
+(1280, 'Carabayllo', 128),
+(1715, 'Caracoto', 173),
+(1366, 'Carampoma', 134),
+(1419, 'Carania', 137),
+(466, 'Carapo', 45),
+(371, 'Caravelí', 37),
+(289, 'Caraybamba', 31),
+(171, 'Caraz', 19),
+(1031, 'Carhuacallanga', 104),
+(1114, 'Carhuamayo', 108),
+(555, 'Carhuanca', 53),
+(192, 'Carhuapampa', 21),
+(125, 'Carhuaz', 13),
+(446, 'Carmen Alto', 43),
+(690, 'Carmen de la Legua Reynoso', 67),
+(494, 'Carmen Salcedo', 48),
+(1511, 'Carumas', 149),
+(1172, 'Casa Grande', 114),
+(182, 'Casca', 20),
+(244, 'Cascapara', 27),
+(1230, 'Cascas', 123),
+(236, 'Cashapampa', 26),
+(1845, 'Casitas', 191),
+(139, 'Casma', 15),
+(1774, 'Caspisapa', 182),
+(1560, 'Castilla', 155),
+(957, 'Castillo Grande', 93),
+(845, 'Castrovirreyna', 84),
+(215, 'Catac', 24),
+(1561, 'Catacaos', 155),
+(679, 'Catache', 66),
+(1420, 'Catahuasi', 137),
+(663, 'Catilluc', 64),
+(1409, 'Caujul', 136),
+(1252, 'Cayalti', 125),
+(546, 'Cayara', 52),
+(420, 'Cayarani', 40),
+(402, 'Caylloma', 39),
+(336, 'Cayma', 35),
+(919, 'Cayna', 89),
+(1759, 'Caynarachi', 180),
+(774, 'Ccapi', 77),
+(790, 'Ccarhuayo', 79),
+(791, 'Ccatca', 79),
+(836, 'Ccochaccasa', 83),
+(696, 'Ccorca', 68),
+(577, 'Celendín', 56),
+(1338, 'Cerro Azul', 132),
+(337, 'Cerro Colorado', 35),
+(480, 'Chaca', 46),
+(981, 'Chacabamba', 98),
+(1136, 'Chacapalpa', 111),
+(1032, 'Chacapampa', 104),
+(108, 'Chacas', 11),
+(1544, 'Chacayan', 153),
+(104, 'Chaccho', 10),
+(1, 'Chachapoyas', 1),
+(387, 'Chachas', 38),
+(1281, 'Chaclacayo', 128),
+(252, 'Chacoche', 28),
+(591, 'Chadin', 57),
+(964, 'Chaglla', 95),
+(377, 'Chala', 37),
+(1589, 'Chalaco', 158),
+(607, 'Chalamarca', 57),
+(532, 'Chalcos', 51),
+(287, 'Chalhuanca', 31),
+(783, 'Challabamba', 78),
+(309, 'Challhuahuacho', 32),
+(745, 'Chamaca', 74),
+(1061, 'Chambara', 105),
+(654, 'Chancay', 63),
+(1355, 'Chancay', 133),
+(680, 'Chancaybaños', 66),
+(1073, 'Chanchamayo', 106),
+(1013, 'Changuillo', 101),
+(1235, 'Chao', 124),
+(378, 'Chaparra', 37),
+(290, 'Chapimarca', 31),
+(338, 'Characato', 35),
+(1188, 'Charat', 118),
+(434, 'Charcana', 42),
+(1530, 'Chaupimarca', 152),
+(1003, 'Chavin', 100),
+(153, 'Chavin de Huantar', 17),
+(941, 'Chavín de Pariarca', 92),
+(495, 'Chaviña', 48),
+(979, 'Chavinillo', 98),
+(1794, 'Chazuta', 184),
+(736, 'Checacupe', 73),
+(728, 'Checca', 72),
+(1398, 'Checras', 135),
+(1179, 'Chepen', 116),
+(563, 'Chetilla', 54),
+(4, 'Cheto', 1),
+(262, 'Chiara', 29),
+(447, 'Chiara', 43),
+(1166, 'Chicama', 114),
+(1033, 'Chicche', 104),
+(421, 'Chichas', 40),
+(1367, 'Chicla', 134),
+(1237, 'Chiclayo', 125),
+(339, 'Chiguata', 35),
+(592, 'Chiguirip', 57),
+(1034, 'Chilca', 104),
+(1339, 'Chilca', 132),
+(484, 'Chilcas', 47),
+(388, 'Chilcaymarca', 38),
+(533, 'Chilcayoc', 51),
+(609, 'Chilete', 58),
+(5, 'Chiliquin', 1),
+(1203, 'Chillia', 120),
+(593, 'Chimban', 57),
+(224, 'Chimbote', 25),
+(1001, 'Chincha Alta', 100),
+(1004, 'Chincha Baja', 100),
+(907, 'Chinchao', 88),
+(713, 'Chinchaypujio', 70),
+(800, 'Chinchero', 80),
+(310, 'Chincheros', 33),
+(860, 'Chinchihuasi', 85),
+(837, 'Chincho', 83),
+(237, 'Chingalpo', 26),
+(105, 'Chingas', 10),
+(496, 'Chipao', 48),
+(1795, 'Chipurana', 184),
+(110, 'Chiquian', 12),
+(67, 'Chirimoto', 6),
+(647, 'Chirinos', 62),
+(29, 'Chisquilla', 3),
+(398, 'Chivay', 39),
+(1264, 'Chochope', 127),
+(389, 'Choco', 38),
+(1167, 'Chocope', 114),
+(1421, 'Chocos', 137),
+(1517, 'Chojata', 150),
+(959, 'Cholon', 94),
+(1035, 'Chongos Alto', 104),
+(1147, 'Chongos Bajo', 112),
+(1238, 'Chongoyape', 125),
+(1552, 'Chontabamba', 154),
+(636, 'Chontali', 61),
+(986, 'Choras', 98),
+(594, 'Choropampa', 57),
+(618, 'Choros', 59),
+(1282, 'Chorrillos', 128),
+(589, 'Chota', 57),
+(1629, 'Chucuito', 163),
+(1215, 'Chugay', 121),
+(632, 'Chugur', 60),
+(1587, 'Chulucanas', 158),
+(513, 'Chumpi', 49),
+(578, 'Chumuch', 56),
+(485, 'Chungui', 47),
+(1644, 'Chupa', 164),
+(1145, 'Chupaca', 112),
+(849, 'Chupamarca', 84),
+(1036, 'Chupuro', 104),
+(6, 'Chuquibamba', 1),
+(418, 'Chuquibamba', 40),
+(320, 'Chuquibambilla', 34),
+(927, 'Chuquis', 90),
+(858, 'Churcampa', 85),
+(908, 'Churubamba', 88),
+(30, 'Churuja', 3),
+(460, 'Chuschi', 44),
+(1283, 'Cieneguilla', 128),
+(253, 'Circa', 28),
+(1813, 'Ciudad Nueva', 186),
+(1518, 'Coalaque', 150),
+(1657, 'Coasa', 165),
+(1630, 'Coata', 163),
+(1340, 'Coayllo', 132),
+(45, 'Cocabamba', 5),
+(427, 'Cocachacra', 41),
+(850, 'Cocas', 84),
+(86, 'Cochabamba', 8),
+(595, 'Cochabamba', 57),
+(937, 'Cochabamba', 91),
+(68, 'Cochamal', 6),
+(1410, 'Cochamarca', 136),
+(167, 'Cochapeti', 18),
+(312, 'Cocharcas', 33),
+(193, 'Cochas', 21),
+(1062, 'Cochas', 105),
+(1422, 'Cochas', 137),
+(1216, 'Cochorco', 121),
+(968, 'Codo del Pozuzo', 96),
+(226, 'Coishco', 25),
+(1677, 'Cojata', 168),
+(1600, 'Colan', 159),
+(637, 'Colasay', 61),
+(547, 'Colca', 52),
+(1037, 'Colca', 104),
+(87, 'Colcabamba', 8),
+(291, 'Colcabamba', 31),
+(889, 'Colcabamba', 87),
+(46, 'Colcamar', 5),
+(775, 'Colcha', 77),
+(1423, 'Colonia', 137),
+(920, 'Colpas', 89),
+(746, 'Colquemarca', 74),
+(784, 'Colquepata', 78),
+(116, 'Colquioc', 12),
+(521, 'Colta', 50),
+(141, 'Comandante Noel', 15),
+(1063, 'Comas', 105),
+(1284, 'Comas', 128),
+(737, 'Combapata', 73),
+(809, 'Conayca', 81),
+(556, 'Concepción', 53),
+(1058, 'Concepción', 105),
+(921, 'Conchamarca', 89),
+(596, 'Conchan', 57),
+(201, 'Conchucos', 22),
+(575, 'Condebamba', 55),
+(1175, 'Condormarca', 115),
+(752, 'Condoroma', 75),
+(1675, 'Conduriri', 167),
+(838, 'Congalla', 83),
+(194, 'Congas', 21),
+(47, 'Conila', 5),
+(1704, 'Conima', 171),
+(1558, 'Constitución', 154),
+(1483, 'Contamana', 143),
+(608, 'Contumaza', 58),
+(1324, 'Copa', 130),
+(24, 'Copallin', 2),
+(1728, 'Copani', 175),
+(403, 'Coporaque', 39),
+(753, 'Coporaque', 75),
+(512, 'Coracora', 49),
+(1658, 'Corani', 165),
+(522, 'Corculla', 50),
+(871, 'Córdova', 86),
+(98, 'Coris', 9),
+(514, 'Coronel Castañeda', 49),
+(1819, 'Coronel Gregorio Albarracín Lanchipa', 186),
+(143, 'Corongo', 16),
+(31, 'Corosha', 3),
+(1839, 'Corrales', 190),
+(579, 'Cortegana', 56),
+(868, 'Cosme', 85),
+(564, 'Cospan', 54),
+(305, 'Cotabambas', 32),
+(432, 'Cotahuasi', 42),
+(216, 'Cotaparaco', 24),
+(292, 'Cotaruse', 31),
+(1118, 'Coviriali', 109),
+(720, 'Coya', 71),
+(306, 'Coyllurqui', 32),
+(1621, 'Cristo Nos Valga', 162),
+(1659, 'Crucero', 165),
+(1512, 'Cuchumbaya', 149),
+(810, 'Cuenca', 81),
+(1368, 'Cuenca', 134),
+(32, 'Cuispes', 3),
+(619, 'Cujillo', 59),
+(168, 'Culebras', 18),
+(1038, 'Cullhuas', 104),
+(80, 'Cumba', 7),
+(1760, 'Cuñumbuqui', 180),
+(1696, 'Cupi', 170),
+(610, 'Cupisnique', 58),
+(1562, 'Cura Mori', 155),
+(254, 'Curahuasi', 28),
+(333, 'Curasco', 34),
+(1217, 'Curgos', 121),
+(1824, 'Curibaya', 187),
+(1084, 'Curicaca', 107),
+(1864, 'Curimana', 195),
+(321, 'Curpahuasi', 34),
+(146, 'Cusca', 16),
+(695, 'Cusco', 68),
+(792, 'Cusipata', 79),
+(616, 'Cutervo', 59),
+(1729, 'Cuturapi', 175),
+(1717, 'Cuyocuyo', 174),
+(951, 'Daniel Alomía Robles', 93),
+(890, 'Daniel Hernández', 87),
+(428, 'Dean Valdivia', 41),
+(1665, 'Desaguadero', 166),
+(760, 'Echarate', 76),
+(655, 'Eduardo Villanueva', 63),
+(1285, 'El Agustino', 128),
+(1528, 'El Algarrobal', 151),
+(1613, 'El Alto', 161),
+(861, 'El Carmen', 85),
+(1005, 'El Carmen', 100),
+(1581, 'El Carmen de la Frontera', 157),
+(41, 'El Cenepa', 4),
+(1752, 'El Eslabón', 179),
+(1014, 'El Ingenio', 101),
+(1085, 'El Mantaro', 107),
+(81, 'El Milagro', 7),
+(281, 'El Oro', 30),
+(25, 'El Parco', 2),
+(319, 'El Porvenir', 33),
+(1155, 'El Porvenir', 113),
+(1796, 'El Porvenir', 184),
+(664, 'El Prado', 64),
+(1563, 'El Tallan', 155),
+(1039, 'El Tambo', 104),
+(183, 'Eleazar Guzmán Barron', 20),
+(1784, 'Elías Soplin Vargas', 183),
+(1475, 'Emilio San Martín', 142),
+(565, 'Encañada', 54),
+(751, 'Espinar', 75),
+(1832, 'Estique', 189),
+(1833, 'Estique-Pampa', 189),
+(1239, 'Eten', 125),
+(1240, 'Eten Puerto', 125),
+(1448, 'Fernando Lores', 138),
+(1257, 'Ferreñafe', 126),
+(184, 'Fidel Olivas Escudero', 20),
+(1504, 'Fitzcarrald', 147),
+(1156, 'Florencia de Mora', 113),
+(33, 'Florida', 3),
+(1570, 'Frias', 156),
+(322, 'Gamarra', 34),
+(1325, 'Gorgor', 130),
+(1545, 'Goyllarisquizga', 153),
+(7, 'Granada', 1),
+(656, 'Gregorio Pita', 63),
+(1006, 'Grocio Prado', 100),
+(1197, 'Guadalupe', 119),
+(1236, 'Guadalupito', 124),
+(611, 'Guzmango', 58),
+(1735, 'Habana', 176),
+(307, 'Haquira', 32),
+(952, 'Hermílio Valdizan', 93),
+(1831, 'Héroes Albarracín', 189),
+(1064, 'Heroínas Toledo', 105),
+(1424, 'Hongos', 137),
+(969, 'Honoria', 96),
+(638, 'Huabal', 61),
+(497, 'Huac-Huas', 48),
+(154, 'Huacachi', 17),
+(534, 'Huacaña', 51),
+(922, 'Huacar', 89),
+(202, 'Huacaschuque', 22),
+(935, 'Huacaybamba', 91),
+(313, 'Huaccana', 33),
+(155, 'Huacchis', 17),
+(1148, 'Huachac', 112),
+(156, 'Huachis', 17),
+(1395, 'Huacho', 135),
+(811, 'Huachocolpa', 81),
+(891, 'Huachocolpa', 87),
+(1531, 'Huachon', 152),
+(851, 'Huachos', 84),
+(1369, 'Huachupampa', 134),
+(99, 'Huacllan', 9),
+(958, 'Huacrachuco', 94),
+(1040, 'Huacrapuquio', 104),
+(1666, 'Huacullani', 166),
+(633, 'Hualgayoc', 60),
+(1041, 'Hualhuas', 104),
+(1742, 'Huallaga', 177),
+(117, 'Huallanca', 12),
+(172, 'Huallanca', 19),
+(1399, 'Hualmay', 135),
+(1214, 'Huamachuco', 121),
+(1086, 'Huamali', 107),
+(1149, 'Huamancaca Chico', 112),
+(471, 'Huamanguilla', 46),
+(548, 'Huamanquiquia', 52),
+(1330, 'Huamantanga', 131),
+(852, 'Huamatambo', 84),
+(557, 'Huambalpa', 53),
+(69, 'Huambo', 6),
+(404, 'Huambo', 39),
+(597, 'Huambos', 57),
+(1425, 'Huampara', 137),
+(405, 'Huanca', 39),
+(839, 'Huanca-Huanca', 83),
+(1553, 'Huancabamba', 154),
+(1579, 'Huancabamba', 157),
+(1042, 'Huancan', 104),
+(1676, 'Huancane', 168),
+(1023, 'Huancano', 103),
+(541, 'Huancapi', 52),
+(1326, 'Huancapon', 130),
+(263, 'Huancarama', 29),
+(785, 'Huancarani', 78),
+(264, 'Huancaray', 29),
+(549, 'Huancaraylla', 52),
+(390, 'Huancarqui', 38),
+(8, 'Huancas', 1),
+(1204, 'Huancaspata', 120),
+(806, 'Huancavelica', 81),
+(1426, 'Huancaya', 137),
+(1030, 'Huancayo', 104),
+(1157, 'Huanchaco', 113),
+(88, 'Huanchay', 8),
+(824, 'Huando', 81),
+(203, 'Huandoval', 22),
+(1429, 'Huañec', 137),
+(1427, 'Huangascar', 137),
+(255, 'Huanipaca', 28),
+(776, 'Huanoquite', 77),
+(469, 'Huanta', 46),
+(1428, 'Huantan', 137),
+(157, 'Huantar', 17),
+(1825, 'Huanuara', 187),
+(905, 'Huanuco', 88),
+(379, 'Huanuhuanu', 37),
+(1370, 'Huanza', 134),
+(282, 'Huaquirca', 30),
+(1351, 'Huaral', 133),
+(1189, 'Huaranchal', 118),
+(648, 'Huarango', 62),
+(85, 'Huaraz', 8),
+(150, 'Huari', 17),
+(1532, 'Huariaca', 152),
+(892, 'Huaribamba', 87),
+(1128, 'Huaricolca', 110),
+(1087, 'Huaripampa', 107),
+(1582, 'Huarmaca', 157),
+(166, 'Huarmey', 18),
+(793, 'Huaro', 79),
+(1371, 'Huarochiri', 134),
+(714, 'Huarocondo', 70),
+(1331, 'Huaros', 131),
+(1129, 'Huasahuasi', 110),
+(1043, 'Huasicancha', 104),
+(580, 'Huasmin', 56),
+(1185, 'Huaso', 117),
+(118, 'Huasta', 12),
+(173, 'Huata', 19),
+(1631, 'Huata', 163),
+(1678, 'Huatasani', 168),
+(1400, 'Huaura', 135),
+(1137, 'Huay-Huay', 111),
+(550, 'Huaya', 52),
+(872, 'Huayacundo Arma', 86),
+(169, 'Huayan', 18),
+(265, 'Huayana', 29),
+(174, 'Huaylas', 19),
+(1205, 'Huaylillas', 120),
+(238, 'Huayllabamba', 26),
+(801, 'Huayllabamba', 80),
+(119, 'Huayllacayan', 12),
+(812, 'Huayllahuara', 81),
+(211, 'Huayllan', 23),
+(217, 'Huayllapampa', 24),
+(323, 'Huayllati', 34),
+(1533, 'Huayllay', 152),
+(840, 'Huayllay Grande', 83),
+(435, 'Huaynacotas', 42),
+(1206, 'Huayo', 120),
+(761, 'Huayopata', 76),
+(1705, 'Huayrapata', 171),
+(869, 'Huaytara', 86),
+(1044, 'Huayucachi', 104),
+(1506, 'Huepetuhe', 147),
+(1088, 'Huertas', 107),
+(1769, 'Huicungo', 181),
+(1797, 'Huimbayoc', 184),
+(1024, 'Humay', 103),
+(1508, 'Iberia', 148),
+(987, 'Ica', 99),
+(657, 'Ichocan', 63),
+(1519, 'Ichuña', 150),
+(406, 'Ichupampa', 39),
+(1606, 'Ignacio Escudero', 160),
+(472, 'Iguain', 46),
+(1356, 'Ihuari', 133),
+(293, 'Ihuayllo', 31),
+(1828, 'Ilabaya', 188),
+(1671, 'Ilave', 167),
+(1265, 'Illimo', 127),
+(1527, 'Ilo', 151),
+(26, 'Imaza', 2),
+(1341, 'Imperial', 132),
+(1484, 'Inahuaya', 143),
+(1500, 'Inambari', 146),
+(1507, 'Iñapari', 148),
+(1259, 'Incahuasi', 126),
+(1679, 'Inchupalla', 168),
+(1814, 'Inclan', 186),
+(89, 'Independencia', 8),
+(558, 'Independencia', 53),
+(1025, 'Independencia', 103),
+(1286, 'Independencia', 128),
+(1449, 'Indiana', 138),
+(1045, 'Ingenio', 104),
+(48, 'Inguilpata', 5),
+(769, 'Inkawasi', 76),
+(1853, 'Iparia', 193),
+(1446, 'Iquitos', 138),
+(422, 'Iray', 40),
+(1863, 'Irazola', 195),
+(429, 'Islay', 41),
+(1829, 'Ite', 188),
+(1660, 'Ituata', 165),
+(813, 'Izcuchaca', 81),
+(983, 'Jacas Chico', 98),
+(942, 'Jacas Grande', 92),
+(340, 'Jacobo Hunter', 35),
+(634, 'Jaén', 61),
+(82, 'Jamalca', 7),
+(90, 'Jangas', 8),
+(1089, 'Janjaillo', 107),
+(380, 'Jaqui', 37),
+(1079, 'Jauja', 107),
+(1266, 'Jayanca', 127),
+(34, 'Jazan', 3),
+(1459, 'Jeberos', 139),
+(1481, 'Jenaro Herrera', 142),
+(1736, 'Jepelacio', 176),
+(1198, 'Jequetepeque', 119),
+(566, 'Jesús', 54),
+(972, 'Jesús', 97),
+(1287, 'Jesús María', 128),
+(457, 'Jesús Nazareno', 43),
+(1571, 'Jilili', 156),
+(943, 'Jircan', 92),
+(974, 'Jivia', 97),
+(581, 'Jorge Chávez', 56),
+(953, 'José Crespo y Castillo', 93),
+(1645, 'José Domingo Choquehuanca', 164),
+(582, 'José Gálvez', 56),
+(1241, 'José Leonardo Ortiz', 125),
+(362, 'José Luis Bustamante Y Rivero', 35),
+(658, 'José Manuel Quiroz', 63),
+(279, 'José María Arguedas', 29),
+(364, 'José María Quimper', 36),
+(659, 'José Sabogal', 63),
+(283, 'Juan Espinoza Medrano', 30),
+(1798, 'Juan Guerra', 184),
+(1767, 'Juanjuí', 181),
+(841, 'Julcamarca', 83),
+(1090, 'Julcán', 107),
+(1182, 'Julcan', 117),
+(1664, 'Juli', 166),
+(1712, 'Juliaca', 173),
+(28, 'Jumbilla', 3),
+(1113, 'Junin', 108),
+(294, 'Justo Apu Sahuaraura', 31),
+(278, 'Kaquiabamba', 29),
+(1667, 'Kelluyo', 166),
+(765, 'Kimbiri', 76),
+(266, 'Kishuara', 29),
+(786, 'Kosñipata', 78),
+(729, 'Kunturkanki', 72),
+(1564, 'La Arena', 155),
+(1799, 'La Banda de Shilcayo', 184),
+(1614, 'La Brea', 161),
+(1520, 'La Capilla', 150),
+(649, 'La Coipa', 62),
+(1840, 'La Cruz', 190),
+(1190, 'La Cuesta', 118),
+(681, 'La Esperanza', 66),
+(1158, 'La Esperanza', 113),
+(665, 'La Florida', 64),
+(1601, 'La Huaca', 159),
+(9, 'La Jalca', 1),
+(341, 'La Joya', 35),
+(91, 'La Libertad', 8),
+(588, 'La Libertad de Pallan', 56),
+(1590, 'La Matanza', 158),
+(100, 'La Merced', 9),
+(862, 'La Merced', 85),
+(1288, 'La Molina', 128),
+(961, 'La Morada', 94),
+(1135, 'La Oroya', 111),
+(147, 'La Pampa', 16),
+(27, 'La Peca', 2),
+(691, 'La Perla', 67),
+(120, 'La Primavera', 12),
+(692, 'La Punta', 67),
+(620, 'La Ramada', 59),
+(988, 'La Tinguiña', 99),
+(926, 'La Unión', 90),
+(1130, 'La Unión', 110),
+(1565, 'La Unión', 155),
+(1242, 'La Victoria', 125),
+(1289, 'La Victoria', 128),
+(1820, 'La Yarada los Palos', 186),
+(1502, 'Laberinto', 146),
+(204, 'Lacabamba', 22),
+(1332, 'Lachaqui', 131),
+(1243, 'Lagunas', 125),
+(1460, 'Lagunas', 139),
+(1572, 'Lagunas', 156),
+(1372, 'Lahuaytambo', 134),
+(598, 'Lajas', 57),
+(1583, 'Lalaquiz', 157),
+(1756, 'Lamas', 180),
+(721, 'Lamay', 71),
+(1263, 'Lambayeque', 127),
+(256, 'Lambrama', 28),
+(523, 'Lampa', 50),
+(1684, 'Lampa', 169),
+(1357, 'Lampian', 133),
+(43, 'Lamud', 5),
+(1607, 'Lancones', 160),
+(1373, 'Langa', 134),
+(730, 'Langui', 72),
+(873, 'Laramarca', 86),
+(498, 'Laramate', 48),
+(1374, 'Laraos', 134),
+(1430, 'Laraos', 137),
+(1159, 'Laredo', 113),
+(722, 'Lares', 71),
+(407, 'Lari', 39),
+(814, 'Laria', 81),
+(1450, 'Las Amazonas', 138),
+(1566, 'Las Lomas', 155),
+(1501, 'Las Piedras', 146),
+(639, 'Las Pirias', 61),
+(731, 'Layo', 72),
+(10, 'Leimebamba', 1),
+(499, 'Leoncio Prado', 48),
+(1401, 'Leoncio Prado', 135),
+(1091, 'Leonor Ordóñez', 107),
+(11, 'Levanto', 1),
+(1275, 'Lima', 128),
+(70, 'Limabamba', 6),
+(715, 'Limatambo', 70),
+(1718, 'Limbani', 174),
+(1290, 'Lince', 128),
+(1431, 'Lincha', 137),
+(833, 'Lircay', 83),
+(747, 'Livitaca', 74),
+(567, 'Llacanora', 54),
+(218, 'Llacllin', 24),
+(1697, 'Llalli', 170),
+(185, 'Llama', 20),
+(599, 'Llama', 57),
+(102, 'Llamellin', 10),
+(666, 'Llapa', 64),
+(205, 'Llapo', 22),
+(939, 'Llata', 92),
+(500, 'Llauta', 48),
+(1119, 'Llaylla', 109),
+(195, 'Llipa', 21),
+(1018, 'Llipata', 102),
+(476, 'Llochegua', 46),
+(1092, 'Llocllapampa', 107),
+(1521, 'Lloque', 150),
+(186, 'Llumpa', 20),
+(748, 'Llusco', 74),
+(408, 'Lluta', 39),
+(1615, 'Lobitos', 161),
+(863, 'Locroja', 85),
+(1827, 'Locumba', 188),
+(381, 'Lomas', 37),
+(71, 'Longar', 6),
+(1176, 'Longotea', 115),
+(49, 'Longuita', 5),
+(50, 'Lonya Chico', 5),
+(83, 'Lonya Grande', 7),
+(989, 'Los Aquijes', 99),
+(568, 'Los Baños del Inca', 54),
+(461, 'Los Morochucos', 44),
+(1291, 'Los Olivos', 128),
+(1616, 'Los Organos', 161),
+(501, 'Lucanas', 48),
+(187, 'Lucma', 20),
+(1231, 'Lucma', 123),
+(295, 'Lucre', 31),
+(794, 'Lucre', 79),
+(486, 'Luis Carranza', 47),
+(1342, 'Lunahuana', 132),
+(473, 'Luricocha', 46),
+(1292, 'Lurigancho', 128),
+(1293, 'Lurin', 128),
+(51, 'Luya', 5),
+(52, 'Luya Viejo', 5),
+(954, 'Luyando', 93),
+(409, 'Maca', 39),
+(1698, 'Macari', 170),
+(227, 'Macate', 25),
+(391, 'Machaguay', 38),
+(1191, 'Mache', 118),
+(802, 'Machupicchu', 80),
+(1654, 'Macusani', 165),
+(1432, 'Madean', 137),
+(1505, 'Madre de Dios', 147),
+(410, 'Madrigal', 39),
+(12, 'Magdalena', 1),
+(569, 'Magdalena', 54),
+(1168, 'Magdalena de Cao', 114),
+(1294, 'Magdalena del Mar', 128),
+(417, 'Majes', 39),
+(1343, 'Mala', 132),
+(170, 'Malvas', 18),
+(324, 'Mamara', 34),
+(1857, 'Manantay', 193),
+(1327, 'Manas', 130),
+(1632, 'Mañazo', 163),
+(1617, 'Mancora', 161),
+(245, 'Mancos', 27),
+(121, 'Mangas', 12),
+(1491, 'Manseriche', 144),
+(815, 'Manta', 81),
+(1503, 'Manu', 147),
+(1260, 'Manuel Antonio Mesones Muro', 126),
+(1065, 'Manzanares', 105),
+(1476, 'Maquia', 142),
+(308, 'Mara', 32),
+(738, 'Marangani', 73),
+(762, 'Maranura', 76),
+(803, 'Maras', 80),
+(219, 'Marca', 24),
+(1218, 'Marcabal', 121),
+(524, 'Marcabamba', 50),
+(795, 'Marcapata', 79),
+(1138, 'Marcapomacocha', 111),
+(130, 'Marcara', 13),
+(829, 'Marcas', 82),
+(1608, 'Marcavelica', 160),
+(1093, 'Marco', 107),
+(1015, 'Marcona', 101),
+(909, 'Margos', 88),
+(53, 'María', 5),
+(462, 'María Parado de Bellido', 44),
+(955, 'Mariano Damaso Beraun', 93),
+(342, 'Mariano Melgar', 35),
+(365, 'Mariano Nicolás Valcárcel', 36),
+(928, 'Marías', 90),
+(1375, 'Mariatana', 134),
+(72, 'Mariscal Benavides', 6),
+(366, 'Mariscal Cáceres', 36),
+(816, 'Mariscal Cáceres', 81),
+(13, 'Mariscal Castilla', 1),
+(1066, 'Mariscal Castilla', 105),
+(1232, 'Marmot', 123),
+(158, 'Masin', 17),
+(1854, 'Masisea', 193),
+(1094, 'Masma', 107),
+(1095, 'Masma Chicche', 107),
+(246, 'Matacoto', 27),
+(1067, 'Matahuasi', 105),
+(1522, 'Matalaque', 150),
+(1849, 'Matapalo', 192),
+(570, 'Matara', 54),
+(175, 'Mato', 19),
+(1363, 'Matucana', 134),
+(1120, 'Mazamari', 109),
+(1451, 'Mazan', 138),
+(430, 'Mejia', 41),
+(694, 'Mi Perú', 67),
+(325, 'Micaela Bastidas', 34),
+(1609, 'Miguel Checa', 160),
+(583, 'Miguel Iglesias', 56),
+(73, 'Milpuc', 6),
+(600, 'Miracosta', 57),
+(343, 'Miraflores', 35),
+(944, 'Miraflores', 92),
+(1296, 'Miraflores', 128),
+(1433, 'Miraflores', 137),
+(106, 'Mirgas', 10),
+(1068, 'Mito', 105),
+(1160, 'Moche', 113),
+(1267, 'Mochumi', 127),
+(1703, 'Moho', 171),
+(965, 'Molino', 95),
+(14, 'Molinopampa', 1),
+(1096, 'Molinos', 107),
+(1225, 'Mollebamba', 122),
+(344, 'Mollebaya', 35),
+(426, 'Mollendo', 41),
+(853, 'Mollepampa', 84),
+(716, 'Mollepata', 70),
+(1226, 'Mollepata', 122),
+(1097, 'Monobamba', 107),
+(1244, 'Monsefu', 125),
+(1573, 'Montero', 156),
+(15, 'Montevideo', 1),
+(945, 'Monzón', 92),
+(1510, 'Moquegua', 149),
+(1800, 'Morales', 184),
+(535, 'Morcolla', 51),
+(228, 'Moro', 25),
+(1139, 'Morococha', 111),
+(1492, 'Morona', 144),
+(1268, 'Morrope', 127),
+(1591, 'Morropon', 158),
+(706, 'Mosoc Llacta', 69),
+(1269, 'Motupe', 127),
+(817, 'Moya', 81),
+(1733, 'Moyobamba', 176),
+(1646, 'Muñani', 164),
+(1098, 'Muqui', 107),
+(1099, 'Muquiyauyo', 107),
+(188, 'Musga', 20),
+(893, 'Ñahuimpuquio', 87),
+(650, 'Namballe', 62),
+(571, 'Namora', 54),
+(667, 'Nanchoc', 64),
+(1452, 'Napo', 138),
+(1012, 'Nasca', 101),
+(1463, 'Nauta', 140),
+(1411, 'Navan', 136),
+(229, 'Nepeña', 25),
+(1865, 'Neshuya', 195),
+(1687, 'Nicasio', 169),
+(367, 'Nicolás de Pierola', 36),
+(668, 'Niepos', 64),
+(40, 'Nieva', 4),
+(682, 'Ninabamba', 66),
+(1534, 'Ninacaca', 152),
+(1245, 'Nueva Arica', 125),
+(1785, 'Nueva Cajamarca', 183),
+(1856, 'Nueva Requena', 193),
+(1069, 'Nueve de Julio', 105),
+(232, 'Nuevo Chimbote', 25),
+(1344, 'Nuevo Imperial', 132),
+(818, 'Nuevo Occoro', 81),
+(1806, 'Nuevo Progreso', 185),
+(1699, 'Nuñoa', 170),
+(984, 'Obas', 98),
+(54, 'Ocalli', 5),
+(502, 'Ocaña', 48),
+(314, 'Ocobamba', 33),
+(763, 'Ocobamba', 76),
+(368, 'Ocoña', 36),
+(796, 'Ocongate', 79),
+(754, 'Ocoruro', 75),
+(874, 'Ocoyo', 86),
+(189, 'Ocros', 21),
+(448, 'Ocros', 43),
+(990, 'Ocucaje', 99),
+(55, 'Ocumal', 5),
+(1688, 'Ocuviri', 169),
+(1661, 'Ollachea', 165),
+(804, 'Ollantaytambo', 80),
+(1730, 'Ollaraya', 175),
+(16, 'Olleros', 1),
+(92, 'Olleros', 8),
+(1270, 'Olmos', 127),
+(777, 'Omacha', 77),
+(1434, 'Omas', 137),
+(1516, 'Omate', 150),
+(74, 'Omia', 6),
+(1115, 'Ondores', 108),
+(1207, 'Ongon', 120),
+(315, 'Ongoy', 33),
+(392, 'Orcopampa', 38),
+(1070, 'Orcotuna', 105),
+(284, 'Oropesa', 30),
+(797, 'Oropesa', 79),
+(1700, 'Orurillo', 170),
+(503, 'Otoca', 48),
+(1186, 'Otuzco', 118),
+(584, 'Oxamarca', 56),
+(1551, 'Oxapampa', 154),
+(525, 'Oyolo', 50),
+(1407, 'Oyon', 136),
+(1246, 'Oyotun', 125),
+(1100, 'Paca', 107),
+(1574, 'Pacaipampa', 156),
+(1180, 'Pacanga', 116),
+(515, 'Pacapausa', 49),
+(1345, 'Pacaran', 132),
+(1358, 'Pacaraos', 133),
+(1199, 'Pacasmayo', 119),
+(449, 'Pacaycasa', 43),
+(778, 'Paccaritambo', 77),
+(601, 'Paccha', 57),
+(1101, 'Paccha', 107),
+(1140, 'Paccha', 111),
+(1402, 'Paccho', 135),
+(1297, 'Pachacamac', 128),
+(285, 'Pachaconas', 30),
+(991, 'Pachacutec', 99),
+(867, 'Pachamarca', 85),
+(1412, 'Pachangara', 136),
+(929, 'Pachas', 90),
+(1815, 'Pachia', 186),
+(1770, 'Pachiza', 181),
+(122, 'Pacllon', 12),
+(267, 'Pacobamba', 29),
+(1529, 'Pacocha', 151),
+(1271, 'Pacora', 127),
+(268, 'Pacucha', 29),
+(1862, 'Padre Abad', 195),
+(1485, 'Padre Márquez', 143),
+(536, 'Paico', 51),
+(1169, 'Paijan', 114),
+(1575, 'Paimas', 156),
+(1597, 'Paita', 159),
+(1771, 'Pajarillo', 181),
+(819, 'Palca', 81),
+(1131, 'Palca', 110),
+(1689, 'Palca', 169),
+(1816, 'Palca', 186),
+(1132, 'Palcamayo', 110),
+(1554, 'Palcazu', 154),
+(1535, 'Pallanchacra', 152),
+(206, 'Pallasca', 22),
+(755, 'Pallpata', 75),
+(1017, 'Palpa', 102),
+(1121, 'Pampa Hermosa', 109),
+(1486, 'Pampa Hermosa', 143),
+(269, 'Pampachiri', 29),
+(393, 'Pampacolca', 38),
+(436, 'Pampamarca', 42),
+(732, 'Pampamarca', 72),
+(985, 'Pampamarca', 98),
+(176, 'Pamparomas', 19),
+(207, 'Pampas', 22),
+(885, 'Pampas', 87),
+(220, 'Pampas Chico', 24),
+(1841, 'Pampas de Hospital', 190),
+(93, 'Pampas Grande', 8),
+(963, 'Panao', 95),
+(1102, 'Pancan', 107),
+(1122, 'Pangoa', 109),
+(1801, 'Papaplaya', 184),
+(1850, 'Papayal', 192),
+(1026, 'Paracas', 103),
+(1319, 'Paramonga', 129),
+(1192, 'Paranday', 118),
+(526, 'Pararca', 50),
+(221, 'Pararin', 24),
+(463, 'Paras', 44),
+(1690, 'Paratia', 169),
+(1103, 'Parco', 107),
+(992, 'Parcona', 99),
+(1208, 'Parcoy', 120),
+(1786, 'Pardo Miguel', 183),
+(94, 'Pariacoto', 8),
+(131, 'Pariahuanca', 13),
+(1046, 'Pariahuanca', 104),
+(1464, 'Parinari', 140),
+(1612, 'Pariñas', 161),
+(212, 'Parobamba', 23),
+(772, 'Paruro', 77),
+(1493, 'Pastaza', 144),
+(1719, 'Patambuco', 174),
+(1253, 'Patapo', 125),
+(326, 'Pataypampa', 34),
+(1209, 'Pataz', 120),
+(1320, 'Pativilca', 129),
+(1546, 'Paucar', 153),
+(830, 'Paucara', 82),
+(864, 'Paucarbamba', 85),
+(1633, 'Paucarcolla', 163),
+(345, 'Paucarpata', 35),
+(781, 'Paucartambo', 78),
+(1536, 'Paucartambo', 152),
+(159, 'Paucas', 17),
+(520, 'Pausa', 50),
+(894, 'Pazos', 87),
+(1469, 'Pebas', 141),
+(653, 'Pedro Gálvez', 63),
+(1709, 'Pedro Vilca Apaza', 172),
+(1074, 'Perene', 106),
+(1720, 'Phara', 174),
+(1210, 'Pias', 120),
+(1634, 'Pichacani', 163),
+(1075, 'Pichanaqui', 106),
+(768, 'Pichari', 76),
+(756, 'Pichigua', 75),
+(257, 'Pichirhua', 28),
+(904, 'Pichos', 87),
+(1772, 'Picota', 182),
+(1247, 'Picsi', 125),
+(820, 'Pilchaca', 81),
+(1047, 'Pilcomayo', 104),
+(1673, 'Pilcuyo', 167),
+(915, 'Pillco Marca', 88),
+(779, 'Pillpinto', 77),
+(1775, 'Pilluana', 182),
+(875, 'Pilpichaca', 86),
+(1248, 'Pimentel', 125),
+(621, 'Pimpingos', 59),
+(938, 'Pinra', 91),
+(1761, 'Pinto Recodo', 180),
+(602, 'Pion', 57),
+(95, 'Pira', 8),
+(723, 'Pisac', 71),
+(1668, 'Pisacoma', 166),
+(1022, 'Pisco', 103),
+(181, 'Piscobamba', 20),
+(1753, 'Piscoyacu', 179),
+(56, 'Pisuquia', 5),
+(1261, 'Pitipo', 126),
+(739, 'Pitumarca', 73),
+(1559, 'Piura', 155),
+(1635, 'Plateria', 163),
+(296, 'Pocohuanca', 31),
+(1817, 'Pocollay', 186),
+(346, 'Pocsi', 35),
+(347, 'Polobaya', 35),
+(1807, 'Polvora', 185),
+(210, 'Pomabamba', 23),
+(1104, 'Pomacancha', 107),
+(707, 'Pomacanchi', 69),
+(270, 'Pomacocha', 29),
+(831, 'Pomacocha', 82),
+(640, 'Pomahuaca', 61),
+(1254, 'Pomalca', 125),
+(1669, 'Pomata', 166),
+(160, 'Ponto', 17),
+(1161, 'Poroto', 113),
+(697, 'Poroy', 68),
+(1787, 'Posic', 183),
+(1647, 'Potoni', 164),
+(1555, 'Pozuzo', 154),
+(327, 'Progreso', 34),
+(57, 'Providencia', 5),
+(1776, 'Pucacaca', 182),
+(479, 'Pucacolpa', 46),
+(1255, 'Pucala', 125),
+(641, 'Pucara', 61),
+(1048, 'Pucara', 104),
+(1691, 'Pucara', 169),
+(956, 'Pucayacu', 93),
+(1298, 'Pucusana', 128),
+(717, 'Pucyura', 70),
+(177, 'Pueblo Libre', 19),
+(1295, 'Pueblo Libre', 128),
+(993, 'Pueblo Nuevo', 99),
+(1007, 'Pueblo Nuevo', 100),
+(1181, 'Pueblo Nuevo', 116),
+(1262, 'Pueblo Nuevo', 126),
+(1299, 'Puente Piedra', 128),
+(1556, 'Puerto Bermúdez', 154),
+(967, 'Puerto Inca', 96),
+(1477, 'Puinahua', 142),
+(683, 'Pulan', 66),
+(516, 'Pullo', 49),
+(1453, 'Punchana', 138),
+(946, 'Punchao', 92),
+(1624, 'Puno', 163),
+(947, 'Puños', 92),
+(431, 'Punta de Bombón', 41),
+(1300, 'Punta Hermosa', 128),
+(1301, 'Punta Negra', 128),
+(1523, 'Puquina', 150),
+(491, 'Puquio', 48),
+(1867, 'Purus', 196),
+(1680, 'Pusi', 168),
+(1707, 'Putina', 172),
+(1435, 'Putinza', 137),
+(1495, 'Putumayo', 145),
+(437, 'Puyca', 42),
+(517, 'Puyusca', 49),
+(438, 'Quechualla', 42),
+(733, 'Quehue', 72),
+(764, 'Quellouno', 76),
+(348, 'Quequeña', 35),
+(876, 'Querco', 86),
+(1610, 'Querecotillo', 160),
+(530, 'Querobamba', 51),
+(622, 'Querocotillo', 59),
+(603, 'Querocoto', 57),
+(975, 'Queropalca', 97),
+(1721, 'Quiaca', 174),
+(382, 'Quicacha', 37),
+(239, 'Quiches', 26),
+(901, 'Quichuas', 87),
+(1049, 'Quichuay', 104),
+(1826, 'Quilahuani', 187),
+(369, 'Quilca', 36),
+(1710, 'Quilcapuncu', 172),
+(1050, 'Quilcas', 104),
+(247, 'Quillo', 27),
+(1346, 'Quilmana', 132),
+(1436, 'Quinches', 137),
+(1524, 'Quinistaquillas', 150),
+(17, 'Quinjalca', 1),
+(1437, 'Quinocay', 137),
+(749, 'Quiñota', 74),
+(450, 'Quinua', 43),
+(213, 'Quinuabamba', 23),
+(798, 'Quiquijana', 79),
+(1227, 'Quiruvilca', 122),
+(895, 'Quishuar', 87),
+(910, 'Quisqui (Kichki)', 88),
+(877, 'Quito-Arma', 86),
+(930, 'Quivilla', 90),
+(240, 'Ragash', 26),
+(161, 'Rahuapampa', 17),
+(1468, 'Ramón Castilla', 141),
+(317, 'Ranracancha', 33),
+(248, 'Ranrahirca', 27),
+(162, 'Rapayan', 17),
+(1858, 'Raymondi', 194),
+(1170, 'Rázuri', 114),
+(35, 'Recta', 3),
+(214, 'Recuay', 24),
+(1249, 'Reque', 125),
+(1472, 'Requena', 142),
+(1376, 'Ricardo Palma', 134),
+(1105, 'Ricran', 107),
+(1302, 'Rímac', 128),
+(1623, 'Rinconada Llicuar', 162),
+(423, 'Río Grande', 40),
+(1019, 'Río Grande', 102),
+(1123, 'Río Negro', 109),
+(42, 'Río Santiago', 4),
+(1124, 'Río Tambo', 109),
+(1782, 'Rioja', 183),
+(931, 'Ripan', 90),
+(903, 'Roble', 87),
+(318, 'Rocchacc', 33),
+(708, 'Rondocan', 69),
+(976, 'Rondos', 97),
+(1496, 'Rosa Panduro', 145),
+(832, 'Rosario', 82),
+(1681, 'Rosaspata', 168),
+(1762, 'Rumisapa', 180),
+(950, 'Rupa-Rupa', 93),
+(286, 'Sabaino', 30),
+(349, 'Sabandia', 35),
+(1754, 'Sacanche', 179),
+(350, 'Sachaca', 35),
+(467, 'Sacsamarca', 45),
+(504, 'Saisa', 48),
+(424, 'Salamanca', 40),
+(994, 'Salas', 99),
+(1272, 'Salas', 127),
+(1162, 'Salaverry', 113),
+(896, 'Salcabamba', 87),
+(897, 'Salcahuasi', 87),
+(1592, 'Salitral', 158),
+(1611, 'Salitral', 160),
+(642, 'Sallique', 61),
+(1193, 'Salpo', 118),
+(1818, 'Sama', 186),
+(1648, 'Saman', 164),
+(230, 'Samanco', 25),
+(1513, 'Samegua', 149),
+(370, 'Samuel Pastor', 36),
+(489, 'Samugari', 47),
+(1051, 'San Agustín', 104),
+(1027, 'San Andrés', 103),
+(623, 'San Andrés de Cutervo', 59),
+(1377, 'San Andrés de Tupicocha', 134),
+(1649, 'San Anton', 164),
+(328, 'San Antonio', 34),
+(1347, 'San Antonio', 132),
+(1378, 'San Antonio', 134),
+(1636, 'San Antonio', 163),
+(1802, 'San Antonio', 184),
+(842, 'San Antonio de Antaparco', 83),
+(271, 'San Antonio de Cachi', 29),
+(411, 'San Antonio de Chuca', 39),
+(878, 'San Antonio de Cusicancha', 86),
+(1303, 'San Bartolo', 128),
+(1379, 'San Bartolomé', 134),
+(612, 'San Benito', 58),
+(674, 'San Bernardino', 65),
+(1304, 'San Borja', 128),
+(960, 'San Buenaventura', 94),
+(1333, 'San Buenaventura', 131),
+(36, 'San Carlos', 3),
+(1028, 'San Clemente', 103),
+(58, 'San Cristóbal', 5),
+(505, 'San Cristóbal', 48),
+(1514, 'San Cristóbal', 149),
+(1777, 'San Cristóbal', 182),
+(196, 'San Cristóbal de Rajan', 21),
+(1380, 'San Damian', 134),
+(643, 'San Felipe', 61),
+(1788, 'San Fernando', 183),
+(923, 'San Francisco', 89),
+(977, 'San Francisco de Asís', 97),
+(1537, 'San Francisco de Asís de Yarusyacan', 152),
+(911, 'San Francisco de Cayran', 88),
+(18, 'San Francisco de Daguas', 1),
+(518, 'San Francisco de Ravacayco', 49),
+(879, 'San Francisco de Sangayaico', 86),
+(59, 'San Francisco de Yeso', 5),
+(1662, 'San Gaban', 165),
+(669, 'San Gregorio', 64),
+(1778, 'San Hilarión', 182),
+(646, 'San Ignacio', 62),
+(880, 'San Isidro', 86),
+(1305, 'San Isidro', 128),
+(19, 'San Isidro de Maino', 1),
+(1842, 'San Jacinto', 190),
+(527, 'San Javier de Alpabamba', 50),
+(60, 'San Jerónimo', 5),
+(272, 'San Jerónimo', 29),
+(698, 'San Jerónimo', 68),
+(1052, 'San Jerónimo de Tunan', 104),
+(1438, 'San Joaquín', 137),
+(1200, 'San José', 119),
+(1273, 'San José', 127),
+(1650, 'San José', 164),
+(995, 'San José de Los Molinos', 99),
+(651, 'San José de Lourdes', 62),
+(1071, 'San José de Quero', 105),
+(1745, 'San José de Sisa', 178),
+(451, 'San José de Ticllas', 43),
+(528, 'San José de Ushua', 50),
+(644, 'San José del Alto', 61),
+(241, 'San Juan', 26),
+(506, 'San Juan', 48),
+(572, 'San Juan', 54),
+(854, 'San Juan', 84),
+(452, 'San Juan Bautista', 43),
+(996, 'San Juan Bautista', 99),
+(1456, 'San Juan Bautista', 138),
+(1593, 'San Juan de Bigote', 158),
+(297, 'San Juan de Chacña', 31),
+(624, 'San Juan de Cutervo', 59),
+(1381, 'San Juan de Iris', 134),
+(1150, 'San Juan de Iscos', 112),
+(1151, 'San Juan de Jarpa', 112),
+(1843, 'San Juan de la Virgen', 190),
+(604, 'San Juan de Licupis', 57),
+(61, 'San Juan de Lopecancha', 5),
+(1306, 'San Juan de Lurigancho', 128),
+(1307, 'San Juan de Miraflores', 128),
+(107, 'San Juan de Rontoy', 10),
+(1651, 'San Juan de Salinas', 164),
+(351, 'San Juan de Siguas', 35),
+(1382, 'San Juan de Tantaranche', 134),
+(352, 'San Juan de Tarucani', 35),
+(1008, 'San Juan de Yanac', 100),
+(1722, 'San Juan del Oro', 174),
+(1106, 'San Lorenzo', 107),
+(1383, 'San Lorenzo de Quinti', 134),
+(136, 'San Luis', 14),
+(675, 'San Luis', 65),
+(1308, 'San Luis', 128),
+(1348, 'San Luis', 132),
+(625, 'San Luis de Lucma', 59),
+(1076, 'San Luis de Shuaro', 106),
+(163, 'San Marcos', 17),
+(898, 'San Marcos de Rocchac', 87),
+(1747, 'San Martín', 178),
+(1309, 'San Martín de Porres', 128),
+(1384, 'San Mateo', 134),
+(1385, 'San Mateo de Otao', 134),
+(481, 'San Miguel', 47),
+(660, 'San Miguel', 64),
+(1310, 'San Miguel', 128),
+(132, 'San Miguel de Aco', 13),
+(1359, 'San Miguel de Acos', 133),
+(978, 'San Miguel de Cauri', 97),
+(273, 'San Miguel de Chaccrampa', 29),
+(123, 'San Miguel de Corpanqui', 12),
+(1584, 'San Miguel de El Faique', 157),
+(865, 'San Miguel de Mayocc', 85),
+(66, 'San Nicolás', 6),
+(137, 'San Nicolás', 14),
+(673, 'San Pablo', 65),
+(740, 'San Pablo', 73),
+(1471, 'San Pablo', 141),
+(1743, 'San Pablo', 177),
+(917, 'San Pablo de Pillao', 88),
+(197, 'San Pedro', 21),
+(507, 'San Pedro', 48),
+(741, 'San Pedro', 73),
+(258, 'San Pedro de Cachora', 28),
+(1133, 'San Pedro de Cajas', 110),
+(1386, 'San Pedro de Casta', 134),
+(164, 'San Pedro de Chana', 17),
+(912, 'San Pedro de Chaulan', 88),
+(1107, 'San Pedro de Chunan', 107),
+(866, 'San Pedro de Coris', 85),
+(1009, 'San Pedro de Huacarpana', 100),
+(1387, 'San Pedro de Huancayre', 134),
+(537, 'San Pedro de Larcay', 51),
+(1196, 'San Pedro de Lloc', 119),
+(508, 'San Pedro de Palco', 48),
+(1439, 'San Pedro de Pilas', 137),
+(1547, 'San Pedro de Pillao', 153),
+(1725, 'San Pedro de Putina Punco', 174),
+(924, 'San Rafael', 89),
+(1744, 'San Rafael', 177),
+(1077, 'San Ramón', 106),
+(1763, 'San Roque de Cumbaza', 180),
+(724, 'San Salvador', 71),
+(538, 'San Salvador de Quije', 51),
+(699, 'San Sebastian', 68),
+(670, 'San Silvestre de Cochan', 64),
+(1335, 'San Vicente de Cañete', 132),
+(1251, 'Saña', 125),
+(1219, 'Sanagoran', 121),
+(298, 'Sañayca', 31),
+(465, 'Sancos', 45),
+(509, 'Sancos', 48),
+(1716, 'Sandia', 174),
+(1388, 'Sangallaya', 134),
+(709, 'Sangarara', 69),
+(1053, 'Saño', 104),
+(231, 'Santa', 25),
+(759, 'Santa Ana', 76),
+(855, 'Santa Ana', 84),
+(510, 'Santa Ana de Huaycahuacho', 48),
+(1548, 'Santa Ana de Tusi', 153),
+(1311, 'Santa Anita', 128),
+(1141, 'Santa Bárbara de Carhuacayan', 111),
+(62, 'Santa Catalina', 5),
+(1594, 'Santa Catalina de Mossa', 158),
+(178, 'Santa Cruz', 19),
+(626, 'Santa Cruz', 59),
+(677, 'Santa Cruz', 66),
+(1020, 'Santa Cruz', 102),
+(1461, 'Santa Cruz', 139),
+(1360, 'Santa Cruz de Andamarca', 133),
+(1228, 'Santa Cruz de Chuca', 122),
+(1389, 'Santa Cruz de Cocachacra', 134),
+(1349, 'Santa Cruz de Flores', 132),
+(613, 'Santa Cruz de Toledo', 58),
+(1390, 'Santa Eulalia', 134),
+(353, 'Santa Isabel de Siguas', 35),
+(1403, 'Santa Leonor', 135),
+(511, 'Santa Lucia', 48),
+(1692, 'Santa Lucia', 169),
+(1404, 'Santa María', 135),
+(274, 'Santa María de Chicmo', 29),
+(1312, 'Santa María del Mar', 128),
+(913, 'Santa María del Valle', 88),
+(354, 'Santa Rita de Siguas', 35),
+(75, 'Santa Rosa', 6),
+(208, 'Santa Rosa', 22),
+(329, 'Santa Rosa', 34),
+(487, 'Santa Rosa', 47),
+(645, 'Santa Rosa', 61),
+(1250, 'Santa Rosa', 125),
+(1313, 'Santa Rosa', 128),
+(1674, 'Santa Rosa', 167),
+(1701, 'Santa Rosa', 170),
+(1748, 'Santa Rosa', 178),
+(962, 'Santa Rosa de Alto Yanajanca', 94),
+(1072, 'Santa Rosa de Ocopa', 105),
+(1334, 'Santa Rosa de Quives', 131),
+(1142, 'Santa Rosa de Sacco', 111),
+(766, 'Santa Teresa', 76),
+(700, 'Santiago', 68),
+(997, 'Santiago', 99),
+(1391, 'Santiago de Anchucaya', 134),
+(1171, 'Santiago de Cao', 114),
+(1211, 'Santiago de Challas', 120),
+(198, 'Santiago de Chilcas', 21),
+(881, 'Santiago de Chocorvos', 86),
+(1222, 'Santiago de Chuco', 122),
+(468, 'Santiago de Lucanamarca', 45),
+(539, 'Santiago de Paucaray', 51),
+(453, 'Santiago de Pischa', 43),
+(1652, 'Santiago de Pupuja', 164),
+(882, 'Santiago de Quirahuara', 86),
+(1314, 'Santiago de Surco', 128),
+(1392, 'Santiago de Tuna', 134),
+(474, 'Santillana', 46),
+(1595, 'Santo Domingo', 158),
+(1056, 'Santo Domingo de Acobamba', 104),
+(883, 'Santo Domingo de Capillas', 86),
+(627, 'Santo Domingo de la Capilla', 59),
+(1393, 'Santo Domingo de Los Olleros', 134),
+(63, 'Santo Tomas', 5),
+(628, 'Santo Tomas', 59),
+(743, 'Santo Tomas', 74),
+(843, 'Santo Tomas de Pata', 83),
+(179, 'Santo Toribio', 19),
+(1054, 'Sapallanga', 104),
+(1576, 'Sapillica', 156),
+(1750, 'Saposoa', 179),
+(1478, 'Saquena', 142),
+(529, 'Sara Sara', 50),
+(1487, 'Sarayacu', 143),
+(551, 'Sarhua', 52),
+(1220, 'Sarin', 121),
+(1221, 'Sartimbamba', 121),
+(1117, 'Satipo', 109),
+(1803, 'Sauce', 184),
+(684, 'Saucepampa', 66),
+(559, 'Saurama', 53),
+(1108, 'Sausa', 107),
+(1405, 'Sayan', 135),
+(1233, 'Sayapullo', 123),
+(439, 'Sayla', 42),
+(701, 'Saylla', 68),
+(844, 'Secclla', 83),
+(1618, 'Sechura', 162),
+(1859, 'Sepahua', 194),
+(685, 'Sexi', 66),
+(1779, 'Shamboyacu', 182),
+(1764, 'Shanao', 180),
+(1804, 'Shapaja', 184),
+(1749, 'Shatoja', 178),
+(133, 'Shilla', 13),
+(37, 'Shipasbamba', 3),
+(932, 'Shunqui', 90),
+(1808, 'Shunte', 185),
+(249, 'Shupluy', 27),
+(412, 'Sibayo', 39),
+(1055, 'Sicaya', 104),
+(1577, 'Sicchez', 156),
+(242, 'Sicsibamba', 26),
+(735, 'Sicuani', 73),
+(233, 'Sihuas', 26),
+(933, 'Sillapata', 90),
+(1163, 'Simbal', 113),
+(1538, 'Simon Bolívar', 152),
+(1711, 'Sina', 172),
+(1109, 'Sincos', 107),
+(948, 'Singa', 92),
+(1194, 'Sinsicap', 118),
+(1229, 'Sitabamba', 122),
+(576, 'Sitacocha', 55),
+(1834, 'Sitajara', 189),
+(475, 'Sivia', 46),
+(355, 'Socabaya', 35),
+(454, 'Socos', 43),
+(629, 'Socota', 59),
+(20, 'Soloco', 1),
+(21, 'Sonche', 1),
+(1585, 'Sondor', 157),
+(1586, 'Sondorillo', 157),
+(1479, 'Soplin', 142),
+(540, 'Soras', 51),
+(299, 'Soraya', 31),
+(1737, 'Soritor', 176),
+(585, 'Sorochuco', 56),
+(998, 'Subtanjalla', 99),
+(101, 'Succha', 9),
+(586, 'Sucre', 56),
+(1143, 'Suitucancha', 111),
+(1604, 'Sullana', 160),
+(1361, 'Sumbilca', 133),
+(1010, 'Sunampe', 100),
+(1321, 'Supe', 129),
+(1322, 'Supe Puerto', 129),
+(1394, 'Surco', 134),
+(899, 'Surcubamba', 87),
+(1315, 'Surquillo', 128),
+(1835, 'Susapaya', 189),
+(757, 'Suyckutambo', 75),
+(1578, 'Suyo', 156),
+(652, 'Tabaconas', 62),
+(1765, 'Tabalosos', 180),
+(605, 'Tacabamba', 57),
+(1810, 'Tacna', 186),
+(1509, 'Tahuamanu', 148),
+(1860, 'Tahuania', 194),
+(275, 'Talavera', 29),
+(1602, 'Tamarindo', 159),
+(455, 'Tambillo', 43),
+(488, 'Tambo', 47),
+(884, 'Tambo', 86),
+(1011, 'Tambo de Mora', 100),
+(1567, 'Tambo Grande', 155),
+(304, 'Tambobamba', 32),
+(1499, 'Tambopata', 146),
+(259, 'Tamburco', 28),
+(1440, 'Tanta', 137),
+(949, 'Tantamayo', 92),
+(856, 'Tantara', 84),
+(614, 'Tantarica', 58),
+(222, 'Tapacocha', 24),
+(300, 'Tapairihua', 31),
+(413, 'Tapay', 39),
+(1480, 'Tapiche', 142),
+(1134, 'Tapo', 110),
+(1549, 'Tapuc', 153),
+(1682, 'Taraco', 168),
+(1791, 'Tarapoto', 184),
+(1830, 'Tarata', 189),
+(725, 'Taray', 71),
+(96, 'Tarica', 8),
+(1126, 'Tarma', 110),
+(1836, 'Tarucachi', 189),
+(999, 'Tate', 99),
+(209, 'Tauca', 22),
+(440, 'Tauria', 42),
+(1212, 'Taurija', 120),
+(1441, 'Tauripampa', 137),
+(1201, 'Tayabamba', 120),
+(1462, 'Teniente Cesar López Rojas', 139),
+(1497, 'Teniente Manuel Clavero', 145),
+(356, 'Tiabaya', 35),
+(1021, 'Tibillo', 102),
+(1837, 'Ticaco', 189),
+(223, 'Ticapampa', 24),
+(1539, 'Ticlacayan', 152),
+(124, 'Ticllos', 12),
+(857, 'Ticrapo', 84),
+(1465, 'Tigre', 140),
+(1706, 'Tilali', 171),
+(134, 'Tinco', 13),
+(64, 'Tingo', 5),
+(1780, 'Tingo de Ponasa', 182),
+(1755, 'Tingo de Saposoa', 179),
+(1731, 'Tinicachi', 175),
+(742, 'Tinta', 73),
+(301, 'Tintay', 31),
+(900, 'Tintay Puncu', 87),
+(1540, 'Tinyahuarco', 152),
+(394, 'Tipan', 38),
+(1637, 'Tiquillaca', 163),
+(1653, 'Tirapata', 164),
+(414, 'Tisco', 39),
+(1805, 'Tocache', 185),
+(606, 'Tocmoche', 57),
+(1442, 'Tomas', 137),
+(925, 'Tomay Kichwa', 89),
+(441, 'Tomepampa', 42),
+(671, 'Tongod', 64),
+(1515, 'Torata', 149),
+(302, 'Toraya', 31),
+(630, 'Toribio Casanova', 59),
+(442, 'Toro', 42),
+(1454, 'Torres Causana', 138),
+(76, 'Totora', 6),
+(464, 'Totos', 44),
+(970, 'Tournavista', 96),
+(1152, 'Tres de Diciembre', 112),
+(1781, 'Tres Unidos', 182),
+(65, 'Trita', 5),
+(1466, 'Trompeteros', 140),
+(1154, 'Trujillo', 113),
+(1274, 'Tucume', 127),
+(1256, 'Tuman', 125),
+(276, 'Tumay Huaraca', 29),
+(676, 'Tumbaden', 65),
+(1838, 'Tumbes', 190),
+(1110, 'Tunan Marca', 107),
+(734, 'Tupac Amaru', 72),
+(1029, 'Tupac Amaru Inca', 103),
+(1443, 'Tupe', 137),
+(330, 'Turpay', 34),
+(277, 'Turpo', 29),
+(415, 'Tuti', 39),
+(1525, 'Ubinas', 150),
+(1809, 'Uchiza', 185),
+(1177, 'Uchumarca', 115),
+(357, 'Uchumayo', 35),
+(478, 'Uchuraccay', 46),
+(165, 'Uco', 17),
+(1178, 'Ucuncha', 115),
+(1116, 'Ulcumayo', 108),
+(1702, 'Umachiri', 170),
+(966, 'Umari', 95),
+(1732, 'Unicachi', 175),
+(672, 'Unión Agua Blanca', 64),
+(395, 'Uñon', 38),
+(519, 'Upahuacho', 49),
+(396, 'Uraca', 38),
+(316, 'Uranmarca', 33),
+(1467, 'Urarinas', 140),
+(787, 'Urcos', 79),
+(1213, 'Urpay', 120),
+(799, 'Urubamba', 80),
+(1663, 'Usicayos', 165),
+(1195, 'Usquil', 118),
+(587, 'Utco', 56),
+(686, 'Uticyacu', 66),
+(38, 'Valera', 3),
+(1488, 'Vargas Guerra', 143),
+(1406, 'Vegueta', 135),
+(1568, 'Veintiseis de Octubre', 155),
+(1362, 'Veintisiete de Noviembre', 133),
+(750, 'Velille', 74),
+(693, 'Ventanilla', 67),
+(1541, 'Vicco', 152),
+(1622, 'Vice', 162),
+(1603, 'Vichayal', 159),
+(1164, 'Victor Larco Herrera', 113),
+(1693, 'Vilavila', 169),
+(821, 'Vilca', 81),
+(331, 'Vilcabamba', 34),
+(767, 'Vilcabamba', 76),
+(1550, 'Vilcabamba', 153),
+(552, 'Vilcanchos', 52),
+(553, 'Vilcas Huaman', 53),
+(1316, 'Villa El Salvador', 128),
+(771, 'Villa Kintiarina', 76),
+(1317, 'Villa María del Triunfo', 128),
+(1557, 'Villa Rica', 154),
+(770, 'Villa Virgen', 76),
+(1638, 'Vilque', 163),
+(1683, 'Vilque Chico', 168),
+(1444, 'Viñac', 137),
+(456, 'Vinchos', 43),
+(1057, 'Viques', 104),
+(397, 'Viraco', 38),
+(1234, 'Viru', 124),
+(332, 'Virundo', 34),
+(560, 'Vischongo', 53),
+(77, 'Vista Alegre', 6),
+(1016, 'Vista Alegre', 101),
+(1445, 'Vitis', 137),
+(1078, 'Vitoc', 106),
+(358, 'Vitor', 35),
+(1125, 'Vizcatan del Ene', 109),
+(702, 'Wanchaq', 68),
+(916, 'Yacus', 88),
+(1498, 'Yaguas', 145),
+(1596, 'Yamango', 158),
+(39, 'Yambrasbamba', 3),
+(84, 'Yamon', 7),
+(148, 'Yanac', 16),
+(303, 'Yanaca', 31),
+(1153, 'Yanacancha', 112),
+(1542, 'Yanacancha', 152),
+(1543, 'Yanahuanca', 153),
+(359, 'Yanahuara', 35),
+(1723, 'Yanahuaya', 174),
+(250, 'Yanama', 27),
+(727, 'Yanaoca', 72),
+(425, 'Yanaquihua', 40),
+(934, 'Yanas', 90),
+(726, 'Yanatile', 71),
+(416, 'Yanque', 39),
+(1738, 'Yantalo', 176),
+(1482, 'Yaquerana', 142),
+(360, 'Yarabamba', 35),
+(1855, 'Yarinacocha', 193),
+(914, 'Yarumayo', 88),
+(383, 'Yauca', 37),
+(1000, 'Yauca del Rosario', 99),
+(822, 'Yauli', 81),
+(1111, 'Yauli', 107),
+(1144, 'Yauli', 111),
+(780, 'Yaurisque', 77),
+(142, 'Yautan', 15),
+(138, 'Yauya', 14),
+(1112, 'Yauyos', 107),
+(1413, 'Yauyos', 137),
+(687, 'Yauyucan', 66),
+(1470, 'Yavari', 141),
+(615, 'Yonan', 58),
+(1789, 'Yorongos', 183),
+(805, 'Yucay', 80),
+(1526, 'Yunga', 150),
+(135, 'Yungar', 13),
+(243, 'Yungay', 27),
+(1726, 'Yunguyo', 175),
+(149, 'Yupan', 16),
+(361, 'Yura', 35),
+(180, 'Yuracmarca', 19),
+(1790, 'Yuracyacu', 183),
+(1457, 'Yurimaguas', 139),
+(1861, 'Yurua', 194),
+(971, 'Yuyapichis', 96),
+(1766, 'Zapatero', 180),
+(1847, 'Zarumilla', 192),
+(1670, 'Zepita', 166),
+(1844, 'Zorritos', 191),
+(1350, 'Zúñiga', 132),
+(718, 'Zurite', 70);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `historial_contratos_vencidos`
+-- (See below for the actual view)
+--
+CREATE TABLE `historial_contratos_vencidos` (
+`idpersona` int
+,`apepaterno` varchar(40)
+,`apematerno` varchar(40)
+,`nombres` varchar(30)
+,`fechanac` date
+,`genero` enum('M','F')
+,`estadocivil` enum('Soltero','Casado','Divorciado','Viudo','Separado','Conviviente')
+,`tipodoc` enum('DNI','CEX','PASS')
+,`numdoc` varchar(15)
+,`direccion` varchar(40)
+,`referencia` varchar(30)
+,`telefono` char(9)
+,`email` varchar(200)
+,`departamento_persona` varchar(40)
+,`provincia_persona` varchar(40)
+,`distrito_persona` varchar(40)
+,`sucursal` varchar(40)
+,`departamento_sucursal` varchar(40)
+,`provincia_sucursal` varchar(40)
+,`distrito_sucursal` varchar(40)
+,`area` varchar(40)
+,`cargo` varchar(40)
+,`fechainicio` date
+,`fechafin` date
+,`sueldobase` decimal(7,0)
+,`toleranciadiaria` int
+,`toleranciamensual` int
+);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `horarios`
+--
+
+CREATE TABLE `horarios` (
+  `idhorario` int NOT NULL,
+  `dia` varchar(10) NOT NULL,
+  `entrada` time NOT NULL,
+  `iniciorefrigerio` time DEFAULT NULL,
+  `finrefrigerio` time DEFAULT NULL,
+  `salida` time DEFAULT NULL,
+  `inicio` date DEFAULT NULL,
+  `fin` date DEFAULT NULL,
+  `idcontrato` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `horarios`
+--
+
+INSERT INTO `horarios` (`idhorario`, `dia`, `entrada`, `iniciorefrigerio`, `finrefrigerio`, `salida`, `inicio`, `fin`, `idcontrato`) VALUES
+(1, 'lunes', '08:00:00', '13:00:00', '14:30:00', '18:00:00', NULL, NULL, 1),
+(2, 'martes', '08:00:00', '13:00:00', '14:30:00', '18:00:00', NULL, NULL, 1),
+(3, 'miercoles', '08:00:00', '13:00:00', '14:30:00', '18:00:00', NULL, NULL, 1),
+(4, 'jueves', '08:00:00', '13:00:00', '14:30:00', '18:00:00', NULL, NULL, 1),
+(5, 'viernes', '08:00:00', '13:00:00', '14:30:00', '18:00:00', NULL, NULL, 1),
+(6, 'sabado', '08:00:00', '00:00:00', '00:00:00', '13:30:00', NULL, NULL, 1),
+(7, 'lunes', '08:00:00', '13:00:00', '14:30:00', '18:00:00', '0000-00-00', '0000-00-00', 1),
+(8, 'lunes', '08:00:00', '13:00:00', '14:30:00', '18:00:00', '0000-00-00', '0000-00-00', 1),
+(9, 'lunes', '08:00:00', '13:00:00', '14:30:00', '18:00:00', '0000-00-00', '0000-00-00', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `mostrar_areas`
+-- (See below for the actual view)
+--
+CREATE TABLE `mostrar_areas` (
+`area` varchar(40)
+,`Numero de personas` bigint
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `mostrar_asistencia`
+-- (See below for the actual view)
+--
+CREATE TABLE `mostrar_asistencia` (
+`idpersona` int
+,`Apellidos y Nombres` varchar(112)
+,`area` varchar(40)
+,`cargo` varchar(40)
+,`dia` varchar(10)
+,`diamarcado` date
+,`entrada` time
+,`iniciorefrigerio` time
+,`finrefrigerio` time
+,`salida` time
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `mostrar_cargos`
+-- (See below for the actual view)
+--
+CREATE TABLE `mostrar_cargos` (
+`cargo` varchar(40)
+,`Numero de personas cargos` bigint
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `mostrar_dias_restantes`
+-- (See below for the actual view)
+--
+CREATE TABLE `mostrar_dias_restantes` (
+`dias_diferencia` int
+,`idcontrato` int
+,`idpersona` int
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `mostrar_personas`
+-- (See below for the actual view)
+--
+CREATE TABLE `mostrar_personas` (
+`idpersona` int
+,`apepaterno` varchar(40)
+,`apematerno` varchar(40)
+,`nombres` varchar(30)
+,`fechanac` date
+,`genero` enum('M','F')
+,`estadocivil` enum('Soltero','Casado','Divorciado','Viudo','Separado','Conviviente')
+,`tipodoc` enum('DNI','CEX','PASS')
+,`numdoc` varchar(15)
+,`direccion` varchar(40)
+,`referencia` varchar(30)
+,`telefono` char(9)
+,`email` varchar(200)
+,`DepartamentoP` varchar(40)
+,`ProvinciaP` varchar(40)
+,`DistritoP` varchar(40)
+,`sucursal` varchar(40)
+,`DepartamentoS` varchar(40)
+,`ProvinciaS` varchar(40)
+,`DistritoS` varchar(40)
+,`area` varchar(40)
+,`cargo` varchar(40)
+,`fechainicio` date
+,`fechafin` date
+,`sueldobase` decimal(7,0)
+,`toleranciadiaria` int
+,`toleranciamensual` int
+);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `numerocuenta`
+--
+
+CREATE TABLE `numerocuenta` (
+  `idnumcuenta` int NOT NULL,
+  `tipomoneda` varchar(30) NOT NULL,
+  `tipoinstitucion` varchar(100) NOT NULL,
+  `nombre` varchar(30) NOT NULL,
+  `numcuenta` varchar(20) NOT NULL,
+  `cci` varchar(20) NOT NULL,
+  `fechainicio` date NOT NULL,
+  `fechafin` date DEFAULT NULL,
+  `idpersona` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `numerocuenta`
+--
+
+INSERT INTO `numerocuenta` (`idnumcuenta`, `tipomoneda`, `tipoinstitucion`, `nombre`, `numcuenta`, `cci`, `fechainicio`, `fechafin`, `idpersona`) VALUES
+(1, 'soles', 'financiera', 'BCP', '1234567890', '1234567890', '2025-02-11', '2025-09-10', 1),
+(2, 'soles', 'financiera', 'BCP', '15141515151515', '15141515151515', '2025-09-10', '2025-10-11', 1),
+(3, 'soles', 'financiera', '', '1275252557257', '1275252557257', '2025-10-11', '2025-09-10', 1),
+(4, 'soles', 'financiera', 'BCP', '6511151516551', '2161651165516151', '2025-09-10', NULL, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `permisos`
+--
+
+CREATE TABLE `permisos` (
+  `idpermiso` int NOT NULL,
+  `horainicio` time DEFAULT NULL,
+  `horafin` time DEFAULT NULL,
+  `duracionminutos` int GENERATED ALWAYS AS (timestampdiff(MINUTE,`horainicio`,`horafin`)) STORED,
+  `motivo` varchar(200) DEFAULT NULL,
+  `fechasolicitud` date DEFAULT NULL,
+  `evidencia` varchar(200) DEFAULT NULL,
+  `idasistencia` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `personas`
+--
+
+CREATE TABLE `personas` (
+  `idpersona` int NOT NULL,
+  `apepaterno` varchar(40) NOT NULL,
+  `apematerno` varchar(40) NOT NULL,
+  `nombres` varchar(30) NOT NULL,
+  `fechanac` date NOT NULL,
+  `genero` enum('M','F') NOT NULL COMMENT 'M = Masculino ; F = Femenino',
+  `tipodoc` enum('DNI','CEX','PASS') NOT NULL COMMENT 'CEX = Carnet de EXtrangeria ; PASS = Pasaporte',
+  `numdoc` varchar(15) NOT NULL,
+  `email` varchar(200) DEFAULT NULL,
+  `telefono` char(9) DEFAULT NULL,
+  `direccion` varchar(40) NOT NULL,
+  `referencia` varchar(30) NOT NULL,
+  `estadocivil` enum('Soltero','Casado','Divorciado','Viudo','Separado','Conviviente') NOT NULL,
+  `iddistrito` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `personas`
+--
+
+INSERT INTO `personas` (`idpersona`, `apepaterno`, `apematerno`, `nombres`, `fechanac`, `genero`, `tipodoc`, `numdoc`, `email`, `telefono`, `direccion`, `referencia`, `estadocivil`, `iddistrito`) VALUES
+(1, 'ANTON', 'FELIX', 'GIAN FRANCO', '2003-09-10', 'M', 'PASS', '75626327', 'antonelixfrancoo@gmail.com', '924207712', 'Santa fe Lomo largo-sunampee', 'segunda entradaa', 'Casado', 1010),
+(2, 'ACOSTA', 'IPARRAGUIRRE', 'NAYELI NATHALY', '2004-02-18', 'F', 'DNI', '75859565', 'acostaiparraguirre@gmail.com', '958658787', 'Su casa', 'bajando la plaza de armas la s', 'Soltero', 1237),
+(3, 'ANTON', 'FELIX', 'DIANA JACKELINE', '1998-03-05', 'F', 'DNI', '75626328', 'antonelixdiana@gmail.com', '924207712', 'Santa fe Lomo largo-sunampee', 'segunda entradaa', 'Casado', 1001),
+(4, 'AGUILAR', 'VILLEGAS', 'IRINA DEL ROSARIO', '2005-05-10', 'M', 'DNI', '71443388', 'antonelixfrancoo@gmail.com', '924515487', 'Santa fe Lomo largo-sunampee', 'oiuhubi', 'Soltero', 998),
+(5, 'TORRES', 'CASSIANO', 'ANGGIE DEBORA', '2004-06-15', 'F', 'DNI', '75626324', 'angiedebora@gmail.com', '985625555', 'acobambaandabamba', 'plaza de armas', 'Soltero', 826),
+(6, 'DE LA TORRE', 'YOKOTA', 'CAMILA MELISSA', '2005-11-12', 'F', 'DNI', '75896544', 'yokotacamilamelissa@gmail.com', '985457854', 'plaza de armas de poruro', 'pasando la plaza de armas la p', 'Soltero', 776);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `provincias`
+--
+
+CREATE TABLE `provincias` (
+  `idprovincia` int NOT NULL,
+  `provincia` varchar(40) NOT NULL,
+  `iddepartamento` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `provincias`
+--
+
+INSERT INTO `provincias` (`idprovincia`, `provincia`, `iddepartamento`) VALUES
+(1, 'Chachapoyas', 1),
+(2, 'Bagua', 1),
+(3, 'Bongará', 1),
+(4, 'Condorcanqui', 1),
+(5, 'Luya', 1),
+(6, 'Rodríguez de Mendoza', 1),
+(7, 'Utcubamba', 1),
+(8, 'Huaraz', 2),
+(9, 'Aija', 2),
+(10, 'Antonio Raymondi', 2),
+(11, 'Asunción', 2),
+(12, 'Bolognesi', 2),
+(13, 'Carhuaz', 2),
+(14, 'Carlos Fermín Fitzcarrald', 2),
+(15, 'Casma', 2),
+(16, 'Corongo', 2),
+(17, 'Huari', 2),
+(18, 'Huarmey', 2),
+(19, 'Huaylas', 2),
+(20, 'Mariscal Luzuriaga', 2),
+(21, 'Ocros', 2),
+(22, 'Pallasca', 2),
+(23, 'Pomabamba', 2),
+(24, 'Recuay', 2),
+(25, 'Santa', 2),
+(26, 'Sihuas', 2),
+(27, 'Yungay', 2),
+(28, 'Abancay', 3),
+(29, 'Andahuaylas', 3),
+(30, 'Antabamba', 3),
+(31, 'Aymaraes', 3),
+(32, 'Cotabambas', 3),
+(33, 'Chincheros', 3),
+(34, 'Grau', 3),
+(35, 'Arequipa', 4),
+(36, 'Camaná', 4),
+(37, 'Caravelí', 4),
+(38, 'Castilla', 4),
+(39, 'Caylloma', 4),
+(40, 'Condesuyos', 4),
+(41, 'Islay', 4),
+(42, 'La Unión', 4),
+(43, 'Huamanga', 5),
+(44, 'Cangallo', 5),
+(45, 'Huanca Sancos', 5),
+(46, 'Huanta', 5),
+(47, 'La Mar', 5),
+(48, 'Lucanas', 5),
+(49, 'Parinacochas', 5),
+(50, 'Páucar del Sara Sara', 5),
+(51, 'Sucre', 5),
+(52, 'Víctor Fajardo', 5),
+(53, 'Vilcas Huamán', 5),
+(54, 'Cajamarca', 6),
+(55, 'Cajabamba', 6),
+(56, 'Celendín', 6),
+(57, 'Chota', 6),
+(58, 'Contumazá', 6),
+(59, 'Cutervo', 6),
+(60, 'Hualgayoc', 6),
+(61, 'Jaén', 6),
+(62, 'San Ignacio', 6),
+(63, 'San Marcos', 6),
+(64, 'San Miguel', 6),
+(65, 'San Pablo', 6),
+(66, 'Santa Cruz', 6),
+(67, 'Prov. Const. del Callao', 7),
+(68, 'Cusco', 8),
+(69, 'Acomayo', 8),
+(70, 'Anta', 8),
+(71, 'Calca', 8),
+(72, 'Canas', 8),
+(73, 'Canchis', 8),
+(74, 'Chumbivilcas', 8),
+(75, 'Espinar', 8),
+(76, 'La Convención', 8),
+(77, 'Paruro', 8),
+(78, 'Paucartambo', 8),
+(79, 'Quispicanchi', 8),
+(80, 'Urubamba', 8),
+(81, 'Huancavelica', 9),
+(82, 'Acobamba', 9),
+(83, 'Angaraes', 9),
+(84, 'Castrovirreyna', 9),
+(85, 'Churcampa', 9),
+(86, 'Huaytará', 9),
+(87, 'Tayacaja', 9),
+(88, 'Huánuco', 10),
+(89, 'Ambo', 10),
+(90, 'Dos de Mayo', 10),
+(91, 'Huacaybamba', 10),
+(92, 'Huamalíes', 10),
+(93, 'Leoncio Prado', 10),
+(94, 'Marañón', 10),
+(95, 'Pachitea', 10),
+(96, 'Puerto Inca', 10),
+(97, 'Lauricocha', 10),
+(98, 'Yarowilca', 10),
+(99, 'Ica', 11),
+(100, 'Chincha', 11),
+(101, 'Nasca', 11),
+(102, 'Palpa', 11),
+(103, 'Pisco', 11),
+(104, 'Huancayo', 12),
+(105, 'Concepción', 12),
+(106, 'Chanchamayo', 12),
+(107, 'Jauja', 12),
+(108, 'Junín', 12),
+(109, 'Satipo', 12),
+(110, 'Tarma', 12),
+(111, 'Yauli', 12),
+(112, 'Chupaca', 12),
+(113, 'Trujillo', 13),
+(114, 'Ascope', 13),
+(115, 'Bolívar', 13),
+(116, 'Chepén', 13),
+(117, 'Julcán', 13),
+(118, 'Otuzco', 13),
+(119, 'Pacasmayo', 13),
+(120, 'Pataz', 13),
+(121, 'Sánchez Carrión', 13),
+(122, 'Santiago de Chuco', 13),
+(123, 'Gran Chimú', 13),
+(124, 'Virú', 13),
+(125, 'Chiclayo', 14),
+(126, 'Ferreñafe', 14),
+(127, 'Lambayeque', 14),
+(128, 'Lima', 15),
+(129, 'Barranca', 15),
+(130, 'Cajatambo', 15),
+(131, 'Canta', 15),
+(132, 'Cañete', 15),
+(133, 'Huaral', 15),
+(134, 'Huarochirí', 15),
+(135, 'Huaura', 15),
+(136, 'Oyón', 15),
+(137, 'Yauyos', 15),
+(138, 'Maynas', 16),
+(139, 'Alto Amazonas', 16),
+(140, 'Loreto', 16),
+(141, 'Mariscal Ramón Castilla', 16),
+(142, 'Requena', 16),
+(143, 'Ucayali', 16),
+(144, 'Datem del Marañón', 16),
+(145, 'Putumayo', 16),
+(146, 'Tambopata', 17),
+(147, 'Manu', 17),
+(148, 'Tahuamanu', 17),
+(149, 'Mariscal Nieto', 18),
+(150, 'General Sánchez Cerro', 18),
+(151, 'Ilo', 18),
+(152, 'Pasco', 19),
+(153, 'Daniel Alcides Carrión', 19),
+(154, 'Oxapampa', 19),
+(155, 'Piura', 20),
+(156, 'Ayabaca', 20),
+(157, 'Huancabamba', 20),
+(158, 'Morropón', 20),
+(159, 'Paita', 20),
+(160, 'Sullana', 20),
+(161, 'Talara', 20),
+(162, 'Sechura', 20),
+(163, 'Puno', 21),
+(164, 'Azángaro', 21),
+(165, 'Carabaya', 21),
+(166, 'Chucuito', 21),
+(167, 'El Collao', 21),
+(168, 'Huancané', 21),
+(169, 'Lampa', 21),
+(170, 'Melgar', 21),
+(171, 'Moho', 21),
+(172, 'San Antonio de Putina', 21),
+(173, 'San Román', 21),
+(174, 'Sandia', 21),
+(175, 'Yunguyo', 21),
+(176, 'Moyobamba', 22),
+(177, 'Bellavista', 22),
+(178, 'El Dorado', 22),
+(179, 'Huallaga', 22),
+(180, 'Lamas', 22),
+(181, 'Mariscal Cáceres', 22),
+(182, 'Picota', 22),
+(183, 'Rioja', 22),
+(184, 'San Martín', 22),
+(185, 'Tocache', 22),
+(186, 'Tacna', 23),
+(187, 'Candarave', 23),
+(188, 'Jorge Basadre', 23),
+(189, 'Tarata', 23),
+(190, 'Tumbes', 24),
+(191, 'Contralmirante Villar', 24),
+(192, 'Zarumilla', 24),
+(193, 'Coronel Portillo', 25),
+(194, 'Atalaya', 25),
+(195, 'Padre Abad', 25),
+(196, 'Purús', 25);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sispensiones`
+--
+
+CREATE TABLE `sispensiones` (
+  `idsp` int NOT NULL,
+  `tiposistema` varchar(150) NOT NULL,
+  `nombresistema` varchar(150) NOT NULL,
+  `fechaafiliacion` date NOT NULL,
+  `fechatermino` date DEFAULT NULL,
+  `cuspp` varchar(12) DEFAULT NULL,
+  `idpersona` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `sispensiones`
+--
+
+INSERT INTO `sispensiones` (`idsp`, `tiposistema`, `nombresistema`, `fechaafiliacion`, `fechatermino`, `cuspp`, `idpersona`) VALUES
+(1, 'AFP', 'PROFUTURO', '2025-10-10', '0000-00-00', '159123614781', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sucursales`
+--
+
+CREATE TABLE `sucursales` (
+  `idsucursal` int NOT NULL,
+  `sucursal` varchar(40) NOT NULL,
+  `direccion` varchar(60) NOT NULL,
+  `referencia` varchar(50) NOT NULL,
+  `iddistrito` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `sucursales`
+--
+
+INSERT INTO `sucursales` (`idsucursal`, `sucursal`, `direccion`, `referencia`, `iddistrito`) VALUES
+(1, 'Yonda Perú', 'Panamericana Sur Km 199, puerta 201', 'Frente a grifo Primax', 1001);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `usuarios`
+--
+
+CREATE TABLE `usuarios` (
+  `nombreusuario` varchar(50) NOT NULL,
+  `claveacceso` varchar(70) NOT NULL,
+  `idcontrato` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `usuarios`
+--
+
+INSERT INTO `usuarios` (`nombreusuario`, `claveacceso`, `idcontrato`) VALUES
+('franco10', 'franco123', 1);
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `areas`
+--
+ALTER TABLE `areas`
+  ADD PRIMARY KEY (`idarea`),
+  ADD UNIQUE KEY `uk_area_sucursal` (`area`,`idsucursal`),
+  ADD KEY `fk_idsucursal_area` (`idsucursal`);
+
+--
+-- Indexes for table `asistencias`
+--
+ALTER TABLE `asistencias`
+  ADD PRIMARY KEY (`idasistencia`),
+  ADD KEY `fk_idhorario_asis` (`idhorario`);
+
+--
+-- Indexes for table `cargafamiliar`
+--
+ALTER TABLE `cargafamiliar`
+  ADD PRIMARY KEY (`idparentesco`),
+  ADD KEY `fk_idpersona_pt` (`idpersona`);
+
+--
+-- Indexes for table `cargos`
+--
+ALTER TABLE `cargos`
+  ADD PRIMARY KEY (`idcargo`),
+  ADD UNIQUE KEY `uk_cargo_area` (`cargo`,`idarea`),
+  ADD KEY `fk_idarea_carg` (`idarea`);
+
+--
+-- Indexes for table `contratos`
+--
+ALTER TABLE `contratos`
+  ADD PRIMARY KEY (`idcontrato`),
+  ADD KEY `fk_idpersona_cont` (`idpersona`),
+  ADD KEY `fk_idcargo_cont` (`idcargo`);
+
+--
+-- Indexes for table `departamentos`
+--
+ALTER TABLE `departamentos`
+  ADD PRIMARY KEY (`iddepartamento`),
+  ADD UNIQUE KEY `uk_departamento_depa` (`departamento`);
+
+--
+-- Indexes for table `distritos`
+--
+ALTER TABLE `distritos`
+  ADD PRIMARY KEY (`iddistrito`),
+  ADD UNIQUE KEY `uk_distrito_provincia` (`distrito`,`idprovincia`),
+  ADD KEY `fk_idprovincia_dist` (`idprovincia`);
+
+--
+-- Indexes for table `horarios`
+--
+ALTER TABLE `horarios`
+  ADD PRIMARY KEY (`idhorario`),
+  ADD KEY `fk_idcontrato_hora` (`idcontrato`);
+
+--
+-- Indexes for table `numerocuenta`
+--
+ALTER TABLE `numerocuenta`
+  ADD PRIMARY KEY (`idnumcuenta`),
+  ADD KEY `fk_idpersona_nc` (`idpersona`);
+
+--
+-- Indexes for table `permisos`
+--
+ALTER TABLE `permisos`
+  ADD PRIMARY KEY (`idpermiso`),
+  ADD KEY `fk_asistencia_pm` (`idasistencia`);
+
+--
+-- Indexes for table `personas`
+--
+ALTER TABLE `personas`
+  ADD PRIMARY KEY (`idpersona`),
+  ADD UNIQUE KEY `uk_numdoc_pers` (`numdoc`),
+  ADD KEY `fk_iddistrito_pers` (`iddistrito`);
+
+--
+-- Indexes for table `provincias`
+--
+ALTER TABLE `provincias`
+  ADD PRIMARY KEY (`idprovincia`),
+  ADD UNIQUE KEY `uk_provincia_prov` (`provincia`),
+  ADD KEY `fk_iddepartemento_prov` (`iddepartamento`);
+
+--
+-- Indexes for table `sispensiones`
+--
+ALTER TABLE `sispensiones`
+  ADD PRIMARY KEY (`idsp`),
+  ADD KEY `fk_idpersona_sis` (`idpersona`);
+
+--
+-- Indexes for table `sucursales`
+--
+ALTER TABLE `sucursales`
+  ADD PRIMARY KEY (`idsucursal`),
+  ADD KEY `fk_iddistrito_sucur` (`iddistrito`);
+
+--
+-- Indexes for table `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD KEY `fk_contrato_us` (`idcontrato`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `areas`
+--
+ALTER TABLE `areas`
+  MODIFY `idarea` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT for table `asistencias`
+--
+ALTER TABLE `asistencias`
+  MODIFY `idasistencia` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `cargafamiliar`
+--
+ALTER TABLE `cargafamiliar`
+  MODIFY `idparentesco` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `cargos`
+--
+ALTER TABLE `cargos`
+  MODIFY `idcargo` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+--
+-- AUTO_INCREMENT for table `contratos`
+--
+ALTER TABLE `contratos`
+  MODIFY `idcontrato` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `departamentos`
+--
+ALTER TABLE `departamentos`
+  MODIFY `iddepartamento` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
+-- AUTO_INCREMENT for table `distritos`
+--
+ALTER TABLE `distritos`
+  MODIFY `iddistrito` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1868;
+
+--
+-- AUTO_INCREMENT for table `horarios`
+--
+ALTER TABLE `horarios`
+  MODIFY `idhorario` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `numerocuenta`
+--
+ALTER TABLE `numerocuenta`
+  MODIFY `idnumcuenta` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `permisos`
+--
+ALTER TABLE `permisos`
+  MODIFY `idpermiso` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `personas`
+--
+ALTER TABLE `personas`
+  MODIFY `idpersona` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `provincias`
+--
+ALTER TABLE `provincias`
+  MODIFY `idprovincia` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=197;
+
+--
+-- AUTO_INCREMENT for table `sispensiones`
+--
+ALTER TABLE `sispensiones`
+  MODIFY `idsp` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `sucursales`
+--
+ALTER TABLE `sucursales`
+  MODIFY `idsucursal` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `historial_contratos_vencidos`
+--
+DROP TABLE IF EXISTS `historial_contratos_vencidos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `historial_contratos_vencidos`  AS SELECT `ps`.`idpersona` AS `idpersona`, `ps`.`apepaterno` AS `apepaterno`, `ps`.`apematerno` AS `apematerno`, `ps`.`nombres` AS `nombres`, `ps`.`fechanac` AS `fechanac`, `ps`.`genero` AS `genero`, `ps`.`estadocivil` AS `estadocivil`, `ps`.`tipodoc` AS `tipodoc`, `ps`.`numdoc` AS `numdoc`, `ps`.`direccion` AS `direccion`, `ps`.`referencia` AS `referencia`, `ps`.`telefono` AS `telefono`, `ps`.`email` AS `email`, `dp1`.`departamento` AS `departamento_persona`, `pv1`.`provincia` AS `provincia_persona`, `dt1`.`distrito` AS `distrito_persona`, `sc`.`sucursal` AS `sucursal`, `dp2`.`departamento` AS `departamento_sucursal`, `pv2`.`provincia` AS `provincia_sucursal`, `dt2`.`distrito` AS `distrito_sucursal`, `ar`.`area` AS `area`, `cr`.`cargo` AS `cargo`, `ct`.`fechainicio` AS `fechainicio`, `ct`.`fechafin` AS `fechafin`, `ct`.`sueldobase` AS `sueldobase`, `ct`.`toleranciadiaria` AS `toleranciadiaria`, `ct`.`toleranciamensual` AS `toleranciamensual` FROM ((((((((((`contratos` `ct` join `personas` `ps` on((`ct`.`idpersona` = `ps`.`idpersona`))) join `cargos` `cr` on((`ct`.`idcargo` = `cr`.`idcargo`))) join `areas` `ar` on((`cr`.`idarea` = `ar`.`idarea`))) join `sucursales` `sc` on((`ar`.`idsucursal` = `sc`.`idsucursal`))) join `distritos` `dt1` on((`ps`.`iddistrito` = `dt1`.`iddistrito`))) join `provincias` `pv1` on((`dt1`.`idprovincia` = `pv1`.`idprovincia`))) join `departamentos` `dp1` on((`pv1`.`iddepartamento` = `dp1`.`iddepartamento`))) join `distritos` `dt2` on((`sc`.`iddistrito` = `dt2`.`iddistrito`))) join `provincias` `pv2` on((`dt2`.`idprovincia` = `pv2`.`idprovincia`))) join `departamentos` `dp2` on((`pv2`.`iddepartamento` = `dp2`.`iddepartamento`))) WHERE (`ct`.`fechafin` < curdate()) ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `mostrar_areas`
+--
+DROP TABLE IF EXISTS `mostrar_areas`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `mostrar_areas`  AS SELECT `ar`.`area` AS `area`, count(`ar`.`area`) AS `Numero de personas` FROM (((`contratos` `ct` join `personas` `ps` on((`ct`.`idpersona` = `ps`.`idpersona`))) join `cargos` `ca` on((`ct`.`idcargo` = `ca`.`idcargo`))) left join `areas` `ar` on((`ca`.`idarea` = `ar`.`idarea`))) GROUP BY `ar`.`area` ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `mostrar_asistencia`
+--
+DROP TABLE IF EXISTS `mostrar_asistencia`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `mostrar_asistencia`  AS SELECT `ps`.`idpersona` AS `idpersona`, concat(`ps`.`apepaterno`,' ',`ps`.`apematerno`,' ',`ps`.`nombres`) AS `Apellidos y Nombres`, `ar`.`area` AS `area`, `cr`.`cargo` AS `cargo`, `hr`.`dia` AS `dia`, `asi`.`diamarcado` AS `diamarcado`, `asi`.`entrada` AS `entrada`, `asi`.`iniciorefrigerio` AS `iniciorefrigerio`, `asi`.`finrefrigerio` AS `finrefrigerio`, `asi`.`salida` AS `salida` FROM (((((`areas` `ar` join `cargos` `cr` on((`ar`.`idarea` = `cr`.`idarea`))) join `contratos` `ct` on((`cr`.`idcargo` = `ct`.`idcargo`))) join `personas` `ps` on((`ct`.`idpersona` = `ps`.`idpersona`))) join `horarios` `hr` on((`ct`.`idcontrato` = `hr`.`idcontrato`))) left join `asistencias` `asi` on((`hr`.`idhorario` = `asi`.`idhorario`))) WHERE (`asi`.`diamarcado` = curdate()) ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `mostrar_cargos`
+--
+DROP TABLE IF EXISTS `mostrar_cargos`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `mostrar_cargos`  AS SELECT `ca`.`cargo` AS `cargo`, count(`ar`.`area`) AS `Numero de personas cargos` FROM (((`contratos` `ct` join `personas` `ps` on((`ct`.`idpersona` = `ps`.`idpersona`))) join `cargos` `ca` on((`ct`.`idcargo` = `ca`.`idcargo`))) left join `areas` `ar` on((`ca`.`idarea` = `ar`.`idarea`))) GROUP BY `ca`.`cargo` ORDER BY 'Numero de personas cargos' ASC ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `mostrar_dias_restantes`
+--
+DROP TABLE IF EXISTS `mostrar_dias_restantes`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `mostrar_dias_restantes`  AS SELECT (to_days(`contratos`.`fechafin`) - to_days(`contratos`.`fechainicio`)) AS `dias_diferencia`, `contratos`.`idcontrato` AS `idcontrato`, `contratos`.`idpersona` AS `idpersona` FROM `contratos` ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `mostrar_personas`
+--
+DROP TABLE IF EXISTS `mostrar_personas`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `mostrar_personas`  AS SELECT `ps`.`idpersona` AS `idpersona`, `ps`.`apepaterno` AS `apepaterno`, `ps`.`apematerno` AS `apematerno`, `ps`.`nombres` AS `nombres`, `ps`.`fechanac` AS `fechanac`, `ps`.`genero` AS `genero`, `ps`.`estadocivil` AS `estadocivil`, `ps`.`tipodoc` AS `tipodoc`, `ps`.`numdoc` AS `numdoc`, `ps`.`direccion` AS `direccion`, `ps`.`referencia` AS `referencia`, `ps`.`telefono` AS `telefono`, `ps`.`email` AS `email`, `dp_p`.`departamento` AS `DepartamentoP`, `pv_p`.`provincia` AS `ProvinciaP`, `dt_p`.`distrito` AS `DistritoP`, `sc`.`sucursal` AS `sucursal`, `dp_s`.`departamento` AS `DepartamentoS`, `pv_s`.`provincia` AS `ProvinciaS`, `dt_s`.`distrito` AS `DistritoS`, `ar`.`area` AS `area`, `cr`.`cargo` AS `cargo`, `ct`.`fechainicio` AS `fechainicio`, `ct`.`fechafin` AS `fechafin`, `ct`.`sueldobase` AS `sueldobase`, `ct`.`toleranciadiaria` AS `toleranciadiaria`, `ct`.`toleranciamensual` AS `toleranciamensual` FROM (((((((((((`contratos` `ct` join (select `contratos`.`idpersona` AS `idpersona`,max(`contratos`.`fechainicio`) AS `fechainicio_max` from `contratos` where (`contratos`.`fechafin` >= curdate()) group by `contratos`.`idpersona`) `ult` on(((`ct`.`idpersona` = `ult`.`idpersona`) and (`ct`.`fechainicio` = `ult`.`fechainicio_max`)))) join `personas` `ps` on((`ct`.`idpersona` = `ps`.`idpersona`))) join `cargos` `cr` on((`ct`.`idcargo` = `cr`.`idcargo`))) join `areas` `ar` on((`cr`.`idarea` = `ar`.`idarea`))) join `sucursales` `sc` on((`ar`.`idsucursal` = `sc`.`idsucursal`))) join `distritos` `dt_p` on((`ps`.`iddistrito` = `dt_p`.`iddistrito`))) join `provincias` `pv_p` on((`dt_p`.`idprovincia` = `pv_p`.`idprovincia`))) join `departamentos` `dp_p` on((`pv_p`.`iddepartamento` = `dp_p`.`iddepartamento`))) join `distritos` `dt_s` on((`sc`.`iddistrito` = `dt_s`.`iddistrito`))) join `provincias` `pv_s` on((`dt_s`.`idprovincia` = `pv_s`.`idprovincia`))) join `departamentos` `dp_s` on((`pv_s`.`iddepartamento` = `dp_s`.`iddepartamento`))) ;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `areas`
+--
+ALTER TABLE `areas`
+  ADD CONSTRAINT `fk_idsucursal_area` FOREIGN KEY (`idsucursal`) REFERENCES `sucursales` (`idsucursal`);
+
+--
+-- Constraints for table `asistencias`
+--
+ALTER TABLE `asistencias`
+  ADD CONSTRAINT `fk_idhorario_asis` FOREIGN KEY (`idhorario`) REFERENCES `horarios` (`idhorario`);
+
+--
+-- Constraints for table `cargafamiliar`
+--
+ALTER TABLE `cargafamiliar`
+  ADD CONSTRAINT `fk_idpersona_pt` FOREIGN KEY (`idpersona`) REFERENCES `personas` (`idpersona`);
+
+--
+-- Constraints for table `cargos`
+--
+ALTER TABLE `cargos`
+  ADD CONSTRAINT `fk_idarea_carg` FOREIGN KEY (`idarea`) REFERENCES `areas` (`idarea`);
+
+--
+-- Constraints for table `contratos`
+--
+ALTER TABLE `contratos`
+  ADD CONSTRAINT `fk_idcargo_cont` FOREIGN KEY (`idcargo`) REFERENCES `cargos` (`idcargo`),
+  ADD CONSTRAINT `fk_idpersona_cont` FOREIGN KEY (`idpersona`) REFERENCES `personas` (`idpersona`);
+
+--
+-- Constraints for table `distritos`
+--
+ALTER TABLE `distritos`
+  ADD CONSTRAINT `fk_idprovincia_dist` FOREIGN KEY (`idprovincia`) REFERENCES `provincias` (`idprovincia`);
+
+--
+-- Constraints for table `horarios`
+--
+ALTER TABLE `horarios`
+  ADD CONSTRAINT `fk_idcontrato_hora` FOREIGN KEY (`idcontrato`) REFERENCES `contratos` (`idcontrato`);
+
+--
+-- Constraints for table `numerocuenta`
+--
+ALTER TABLE `numerocuenta`
+  ADD CONSTRAINT `fk_idpersona_nc` FOREIGN KEY (`idpersona`) REFERENCES `personas` (`idpersona`);
+
+--
+-- Constraints for table `permisos`
+--
+ALTER TABLE `permisos`
+  ADD CONSTRAINT `fk_asistencia_pm` FOREIGN KEY (`idasistencia`) REFERENCES `asistencias` (`idasistencia`);
+
+--
+-- Constraints for table `personas`
+--
+ALTER TABLE `personas`
+  ADD CONSTRAINT `fk_iddistrito_pers` FOREIGN KEY (`iddistrito`) REFERENCES `distritos` (`iddistrito`);
+
+--
+-- Constraints for table `provincias`
+--
+ALTER TABLE `provincias`
+  ADD CONSTRAINT `fk_iddepartemento_prov` FOREIGN KEY (`iddepartamento`) REFERENCES `departamentos` (`iddepartamento`);
+
+--
+-- Constraints for table `sispensiones`
+--
+ALTER TABLE `sispensiones`
+  ADD CONSTRAINT `fk_idpersona_sis` FOREIGN KEY (`idpersona`) REFERENCES `personas` (`idpersona`);
+
+--
+-- Constraints for table `sucursales`
+--
+ALTER TABLE `sucursales`
+  ADD CONSTRAINT `fk_iddistrito_sucur` FOREIGN KEY (`iddistrito`) REFERENCES `distritos` (`iddistrito`);
+
+--
+-- Constraints for table `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD CONSTRAINT `fk_contrato_us` FOREIGN KEY (`idcontrato`) REFERENCES `contratos` (`idcontrato`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

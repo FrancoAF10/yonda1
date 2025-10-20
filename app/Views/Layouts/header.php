@@ -1,6 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html data-bs-theme="light" lang="es">
 <!-- [Head] start -->
+
+
+
+
 
 <head>
   <title>Home | Mantis Bootstrap 5 Admin Template</title>
@@ -34,7 +38,17 @@
   <!-- [Template CSS Files] -->
   <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>" id="main-style-link">
   <link rel="stylesheet" href="<?= base_url('assets/css/style-preset.css') ?>">
-
+  <!-- DataTables con Bootstrap 5 -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"`
+  />
+  <!--Full Calendar-->
+  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
 </head>
 <!-- [Head] end -->
 <!-- [Body] Start -->
@@ -65,6 +79,11 @@
             </a>
           </li>
 
+
+            <body>
+    <button onclick="toggleTheme()">🌙 Cambiar tema</button>
+  </body>
+
           <li class="pc-item pc-caption">
             <label>Procesos</label>
             <i class="ti ti-dashboard"></i>
@@ -78,8 +97,11 @@
             </a>
             <ul class="pc-submenu">
               <li class="pc-item"><a class="pc-link" href="<?= base_url('personas') ?>">Trabajadores</a></li>
-              <li class="pc-item"><a class="pc-link" href="#!">Renovacion</a></li>
-            </ul>
+              <li class="pc-item"><a class="pc-link" href="<?= base_url('Renovacion/ContratosVencidos') ?>">Renovacion</a></li>
+              <li class="pc-item"><a class="pc-link" href="<?= base_url('personas/calendar') ?>">Calendar</a></li>
+              <li class="pc-item"><a class="pc-link" href="<?= base_url('Renovacion/HistorialVencidos') ?>">Historial Vencidos</a></li>
+            </ul>  
+
           </li>
           <li class="pc-item pc-hasmenu">
             <a href="javascript:void(0);" class="pc-link">
@@ -88,92 +110,82 @@
               <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
             </a>
             <ul class="pc-submenu">
-              <li class="pc-item"><a class="pc-link" href="<?= base_url('asistencia') ?>">Asistencia del Día</a></li>
-              <li class="pc-item"><a class="pc-link" href="#!">Historial de Asistencia</a></li>
+              <li class="pc-item"><a class="pc-link" href="<?= base_url('asistencia/hoy') ?>">Historial del dia</a></li>
+              <li class="pc-item"><a class="pc-link" href="<?= base_url('asistencia') ?>">Historial Asistencia</a></li>
+              <li class="pc-item"><a class="pc-link" href="<?= base_url('tareo') ?>">Tareo</a></li>
               <li class="pc-item"><a class="pc-link" href="#!">Reportes</a></li>
             </ul>
           </li>
-          <li class="pc-item">
-            <a href="../elements/bc_color.html" class="pc-link">
-              <span class="pc-micon"><i class="ti ti-color-swatch"></i></span>
-              <span class="pc-mtext">Color</span>
-            </a>
-          </li>
-          <li class="pc-item">
-            <a href="../elements/icon-tabler.html" class="pc-link">
-              <span class="pc-micon"><i class="ti ti-plant-2"></i></span>
-              <span class="pc-mtext">Icons</span>
-            </a>
+
+          <!--ADMINISTRACION-->
+          <li class="pc-item pc-caption">
+            <label>Administrativo</label>
+            <i class="ti ti-dashboard"></i>
           </li>
 
-          <li class="pc-item pc-caption">
-            <label>Mantenimiento</label>
-            <i class="ti ti-news"></i>
-          </li>
-          <li class="pc-item">
-            <a href="../pages/login.html" class="pc-link">
-              <span class="pc-micon"><i class="ti ti-lock"></i></span>
-              <span class="pc-mtext">Login</span>
-            </a>
-          </li>
-          <li class="pc-item">
-            <a href="../pages/register.html" class="pc-link">
-              <span class="pc-micon"><i class="ti ti-user-plus"></i></span>
-              <span class="pc-mtext">Register</span>
-            </a>
-          </li>
-
-          <li class="pc-item pc-caption">
-            <label>Other</label>
-            <i class="ti ti-brand-chrome"></i>
-          </li>
           <li class="pc-item pc-hasmenu">
-            <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-menu"></i></span><span
-                class="pc-mtext">Menu
-                levels</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+            <a href="javascript:void(0);" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-menu"></i></span>
+              <span class="pc-mtext">ORGANIZACION</span>
+              <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
+            </a>
             <ul class="pc-submenu">
-              <li class="pc-item"><a class="pc-link" href="#!">Level 2.1</a></li>
-              <li class="pc-item pc-hasmenu">
-                <a href="#!" class="pc-link">Level 2.2<span class="pc-arrow"><i
-                      data-feather="chevron-right"></i></span></a>
-                <ul class="pc-submenu">
-                  <li class="pc-item"><a class="pc-link" href="#!">Level 3.1</a></li>
-                  <li class="pc-item"><a class="pc-link" href="#!">Level 3.2</a></li>
-                  <li class="pc-item pc-hasmenu">
-                    <a href="#!" class="pc-link">Level 3.3<span class="pc-arrow"><i
-                          data-feather="chevron-right"></i></span></a>
-                    <ul class="pc-submenu">
-                      <li class="pc-item"><a class="pc-link" href="#!">Level 4.1</a></li>
-                      <li class="pc-item"><a class="pc-link" href="#!">Level 4.2</a></li>
-                    </ul>
-                  </li>
-                </ul>
-              </li>
-              <li class="pc-item pc-hasmenu">
-                <a href="#!" class="pc-link">Level 2.3<span class="pc-arrow"><i
-                      data-feather="chevron-right"></i></span></a>
-                <ul class="pc-submenu">
-                  <li class="pc-item"><a class="pc-link" href="#!">Level 3.1</a></li>
-                  <li class="pc-item"><a class="pc-link" href="#!">Level 3.2</a></li>
-                  <li class="pc-item pc-hasmenu">
-                    <a href="#!" class="pc-link">Level 3.3<span class="pc-arrow"><i
-                          data-feather="chevron-right"></i></span></a>
-                    <ul class="pc-submenu">
-                      <li class="pc-item"><a class="pc-link" href="#!">Level 4.1</a></li>
-                      <li class="pc-item"><a class="pc-link" href="#!">Level 4.2</a></li>
-                    </ul>
-                  </li>
-                </ul>
-              </li>
+              <li class="pc-item"><a class="pc-link" href="<?= base_url('areas') ?>">Areas</a></li>
+              <li class="pc-item"><a class="pc-link" href="<?= base_url('colaboradores') ?>">Colaboradores</a></li>
+              <li class="pc-item"><a class="pc-link" href="<?= base_url('sucursal') ?>">Sucursal</a></li>
+            </ul>
+
+            <!--TRABAJADORES-->
+
+
+          <li class="pc-item pc-hasmenu">
+            <a href="javascript:void(0);" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-menu"></i></span>
+              <span class="pc-mtext">TRABAJADORES</span>
+              <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
+            </a>
+            <ul class="pc-submenu">
+              <li class="pc-item"><a class="pc-link" href="<?= base_url('otros') ?>">Otros</a></li>
+              <li class="pc-item"><a class="pc-link" href="<?= base_url('vacaciones') ?>">Vacaciones</a></li>
+
             </ul>
           </li>
-          <li class="pc-item">
-            <a href="../other/sample-page.html" class="pc-link">
-              <span class="pc-micon"><i class="ti ti-brand-chrome"></i></span>
-              <span class="pc-mtext">Sample page</span>
+
+          <!--Configuracion-->
+          <li class="pc-item pc-caption">
+            <label>Configuracion</label>
+            <i class="ti ti-dashboard"></i>
+          </li>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="<?= base_url('carga-asistencia-procesada') ?>">Cargar Asistecia</a></li>
+          </ul>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="<?= base_url('item') ?>">Item</a></li>
+          </ul>
+
+          <!--plantillas-->
+
+          <li class="pc-item pc-caption">
+            <label>Plantillas</label>
+            <i class="ti ti-dashboard"></i>
+          </li>
+
+          <li class="pc-item pc-hasmenu">
+            <a href="javascript:void(0);" class="pc-link">
+              <span class="pc-micon"><i class="ti ti-menu"></i></span>
+              <span class="pc-mtext">PLANTILLAS</span>
+              <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
             </a>
+            <ul class="pc-submenu">
+              <li class="pc-item"><a class="pc-link" href="<?= base_url('plantilla') ?>">Plantilla</a></li>
+              <li class="pc-item"><a class="pc-link" href="<?= base_url('prueba') ?>">Prueba</a></li>
+            </ul>
           </li>
         </ul>
+
+
+
+
 
       </div>
     </div>
@@ -378,5 +390,142 @@
         </ul>
       </div>
     </div>
+
+
+      <style>
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-color: #f8f9fa;
+    }
+    /* Sidebar */
+    #sidebar {
+      min-width: 250px;
+      max-width: 250px;
+      background-color: #0d6efd; /* Bootstrap primary blue */
+      color: white;
+      min-height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      transition: all 0.3s;
+      z-index: 1030;
+    }
+    #sidebar .nav-link {
+      color: white;
+      font-weight: 500;
+      font-size: 1.05rem;
+      padding: 1rem 1.5rem;
+      border-left: 4px solid transparent;
+      transition: background-color 0.3s, border-left-color 0.3s;
+    }
+    #sidebar .nav-link:hover,
+    #sidebar .nav-link.active {
+      background-color: #0b5ed7;
+      border-left-color: #ffc0cb; /* rosado */
+      color: #ffc0cb;
+    }
+    #sidebar .nav-link i {
+      margin-right: 0.75rem;
+      font-size: 1.2rem;
+    }
+    /* Content wrapper */
+    #content-wrapper {
+      margin-left: 250px;
+      transition: margin-left 0.3s;
+      padding: 1.5rem 2rem 2rem 2rem;
+    }
+    /* Top navbar */
+    #top-navbar {
+      height: 56px;
+      background-color: white;
+      border-bottom: 1px solid #dee2e6;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: fixed;
+      top: 0;
+      left: 250px;
+      right: 0;
+      z-index: 1020;
+    }
+    #top-navbar .search-input {
+      max-width: 400px;
+      width: 100%;
+    }
+    #top-navbar .profile {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+    }
+    #top-navbar .profile img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #0d6efd;
+    }
+    /* Cards KPI */
+    .kpi-card {
+      border-radius: 0.75rem;
+      box-shadow: 0 0.25rem 0.5rem rgb(13 110 253 / 0.15);
+      transition: transform 0.2s ease;
+      background: white;
+    }
+    .kpi-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0.5rem 1rem rgb(13 110 253 / 0.25);
+    }
+    .kpi-value {
+      font-weight: 700;
+      font-size: 2rem;
+      color: #0d6efd;
+    }
+    .kpi-label {
+      font-weight: 600;
+      color: #6c757d;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 991.98px) {
+      #sidebar {
+        position: fixed;
+        left: -250px;
+        z-index: 1040;
+      }
+      #sidebar.active {
+        left: 0;
+      }
+      #content-wrapper {
+        margin-left: 0;
+        padding-top: 56px;
+      }
+      #top-navbar {
+        left: 0;
+      }
+      #sidebar-toggler {
+        display: inline-block;
+      }
+    }
+    /* Sidebar toggler button */
+    #sidebar-toggler {
+      display: none;
+      font-size: 1.5rem;
+      color: #0d6efd;
+      cursor: pointer;
+      user-select: none;
+    }
+    /* Chart container spacing */
+    .chart-container {
+      background: white;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: 0 0.25rem 0.5rem rgb(0 0 0 / 0.1);
+      margin-bottom: 1.5rem;
+    }
+  </style>
+
+
   </header>
   <!-- [ Header ] end -->
