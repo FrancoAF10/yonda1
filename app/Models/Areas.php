@@ -16,7 +16,14 @@ protected $primaryKey = 'idarea';
 protected $allowedFields = ['area','idsucursal'];
 
 
-
+    /**
+     *  Obtiene el listado completo de áreas
+     * 
+     * Consulta la vista 'mostrar_areas' que contiene la información
+     * de todas las áreas registradas en el sistema.
+     * 
+     * @return array Arreglo de registros con la información de las áreas
+     */
     public function Vista_Areas(){
       $query =$this->db->query("SELECT * FROM mostrar_areas");
       return $query->getResultArray();

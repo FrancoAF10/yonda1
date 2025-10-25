@@ -5,7 +5,14 @@ use App\Models\Asistencia;
 
 
 class AsistenciaController extends BaseController {
-
+    /**
+     * Vista principal de asistencias con filtros aplicados desde el Modelo(Models)
+     * Este método maneja la visualizacion de registros de asistencia permitiendo filtrar por rango de fechas y dni del empleado.
+     * En caso de no proporcionar fecha , utilizara la fecha actual como valor predeterminado,
+     * @return string Vista HTML dentro del index.php con la lista de asistencias filtradas
+     * - header (string): vista del encabezado
+     * - footer (string): vista del pie de página
+     */
     public function index() {
         $asistencia = new Asistencia();
 
@@ -37,9 +44,14 @@ class AsistenciaController extends BaseController {
         return view("asistencia/index", $datos);
     }
 
-    
-
-
+    /**
+     * Muestra la vista de asistencia del día actual.
+     * Este método carga todos los registros de la asistencia desde la vista de la abse de datos "mostrar_asistencia"
+     * y los presenta en la interfaz correspondiente del día de hoy.
+     * @return string Vista asistencia/hoy con el listado completo de asistencias
+     * - header (string): vista del encabezado
+     * - footer (string): vista del pie de página
+     */
     public function hoy(){
         $asistencia=new Asistencia();
         $datos['listarasistencia']=$asistencia->Vista_Asistencia2();

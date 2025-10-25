@@ -13,7 +13,7 @@ use App\Models\Sucursal;
 class ContratosController extends BaseController
 {
     public function index(){
-        
+
       $contrato=new Contratos();
       $datos['contratosvencidos']=$contrato->Vista_Contratos_Vencidos();
       $datos['header'] = view("Layouts/header");

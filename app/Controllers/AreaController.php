@@ -6,7 +6,10 @@ use App\Models\Areas;
 use App\Models\Cargos;
 class AreaController extends BaseController
 {
-
+      /**
+       * Muestra la pantalla principal con el Dashboard: areas, cargos
+       * @return string
+       */
       public function index(){
         $areas = new Areas();
         $cargos = new Cargos();
@@ -19,7 +22,12 @@ class AreaController extends BaseController
 
         return view('dashboard', $datos);
     }
-
+    /**
+     * Obtiene las areas asociadas a una sucursal
+     * Función consulta y retorna todas las areas que pertenecen a la sucursal indicada por su identificador.
+     * @param mixed $idsucursal
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
     public function getAreasBySucursal($idsucursal=""){
       $area= new Areas();
       $this->response->setContentType("application/json");

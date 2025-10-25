@@ -47,6 +47,7 @@ $routes->post('/login/cambiarClave', 'LoginController::cambiarClave');
 $routes->get('/asistencia/hoy', 'AsistenciaController::hoy');
 $routes->get('asistencia', 'AsistenciaController::index');
 $routes->post('asistencia', 'AsistenciaController::index');
+$routes->post('asistencia/descargar', 'CargaAsistenciaProcesadaController::descargarAsistencia'); //nuevo 21/10/2025
 
 // ===================================================================
 // ======== FIN DE RUTAS DEL CONTROLADOR AsistenciaController ========
@@ -294,6 +295,7 @@ $routes->post('carga-asistencia-procesada/descargar-errores', 'CargaAsistenciaPr
 $routes->post('/numcuenta/guardar','NumeroCuentaController::crear');
 //AGREGAR PARENTESCO
 $routes->post('/cargafamiliar/guardar','CargaFamiliarController::crear');
+$routes->get('/api/personas/buscarhijos/(:any)', 'CargaFamiliarController::searchDNIPersonas/$1');
 //AGREGAR SISTEMA PENSIONES
 $routes->post('/sispensiones/guardar','SistemaPensionesController::crear');
 

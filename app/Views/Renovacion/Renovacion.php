@@ -38,7 +38,7 @@
           
             <td>
 
-            <a href="<?= base_url('Renovacion/NuevoContrato/').$vencidos['idpersona'] ?>" class="btn btn-sm btn-danger delete"><i class="fa-solid fa-trash"></i></a>
+            <a href="<?= base_url('fincontrato/').$vencidos['idpersona'] ?>" class="btn btn-sm btn-danger delete"><i class="fa-solid fa-trash"></i></a>
             <a href="<?= base_url('Renovacion/NuevoContrato/').$vencidos['idpersona'] ?>" class="btn btn-sm btn-info edit"><i class="fa-solid fa-pen-to-square"></i></a>
             </td>
         </tr>

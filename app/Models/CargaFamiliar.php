@@ -14,22 +14,31 @@ class CargaFamiliar extends Model
     protected $primaryKey = 'idcargafamiliar';
 
     //3. Campos operar
-    protected $allowedFields = ['nombre',
-                                'apepaterno',
-                                'apematerno',
-                                'fechanac',
-                                'genero',
+    protected $allowedFields = [
                                 'parentesco',
-                                'estudia',
-                                'dependiente',
-                                'tipodoc',
                                 'evidencia',
-                                'idpersona'
+                                'idpersona',
+                                'idhijo'
                                 ];
-
-    public function getcargafamiliar($idpersona = null)
-    {
-        $query = $this->db->query("SELECT * FROM cargafamiliar WHERE idpersona=? ORDER BY idcargafamiliar DESC", [$idpersona]);
-        return $query->getResultArray();
+   /**
+    * Obtiene la carga familiar de un empleado en específo
+    *
+    * Consulta todos los dependientes (hijos) asociados a un empleado,
+    * incluyendo la información completa de la carga familiar y los datos
+    * personales de cada dependiente (nombres y apellidos).
+    *
+    * @param mixed $idpersona Identificador único del empleado
+    * @return array Arreglo de registros con información de la carga familiar
+    *               Incluye: datos de cargafamiliar + nombres_hijo, apepaterno_hijo, apematerno_hijo
+    */
+   public function getcargafamiliar($idpersona){
+        return $this->select('cargafamiliar.*, 
+                            p2.nombres as nombres_hijo, 
+                            p2.apepaterno as apepaterno_hijo, 
+                            p2.apematerno as apematerno_hijo')
+                    ->join('personas as p2', 'p2.idpersona = cargafamiliar.idhijo')
+                    ->where('cargafamiliar.idpersona', $idpersona)
+                    ->findAll();
     }
+
 }

@@ -81,7 +81,7 @@ WHERE ASI.diamarcado = CURDATE();
 	INNER JOIN distritos DT_S    ON SC.iddistrito = DT_S.iddistrito
 	INNER JOIN provincias PV_S   ON DT_S.idprovincia = PV_S.idprovincia
 	INNER JOIN departamentos DP_S ON PV_S.iddepartamento = DP_S.iddepartamento
-	WHERE estado = 'Activo';
+	WHERE estado = 'Activo';;
 	
 
 

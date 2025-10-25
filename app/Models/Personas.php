@@ -21,7 +21,6 @@ class Personas extends Model {
         $query =$this->db->query("SELECT * FROM mostrar_personas WHERE idpersona=? LIMIT 1",[$idpersona]);
         return $query->getRowArray();
     }
-    
 
     
 

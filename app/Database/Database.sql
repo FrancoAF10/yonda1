@@ -182,21 +182,14 @@ USE recursoshumanos;
 		)ENGINE=INNODB;
 		
         CREATE TABLE cargafamiliar(
-        idcargafamiliar INT AUTO_INCREMENT PRIMARY KEY,
-        idpersona INT NOT NULL, -- Empleado titular
-        nombre VARCHAR(100) NOT NULL,
-        apepaterno VARCHAR(50) NOT NULL,
-        apematerno VARCHAR(50) NULL,
-        fechanac DATE NOT NULL,
-        genero ENUM('M','F') NULL,  -- Útil para estadísticas
-        parentesco ENUM('Hijo','Cónyuge','Padre','Madre','Otro') NOT NULL,
-        estudia BOOLEAN DEFAULT FALSE,
-        dependiente BOOLEAN DEFAULT TRUE,
-        tipodoc ENUM('DNI','CEX','PASS') NULL, 
-        evidencia VARCHAR(200) NULL,
-        CONSTRAINT fk_idpersona_cf FOREIGN KEY (idpersona) REFERENCES personas(idpersona)
-        )ENGINE=INNODB;
-
+            idcargafamiliar INT AUTO_INCREMENT PRIMARY KEY,
+            parentesco ENUM('Hijo','Cónyuge','Padre','Madre','Otro') NOT NULL,
+            evidencia VARCHAR(200) NULL,
+            idpersona INT NOT NULL,   -- FK a trabajador (titular)
+            idhijo INT NOT NULL,      -- FK a persona registrada como hijo/dependiente
+            CONSTRAINT fk_idpersona_cf FOREIGN KEY (idpersona) REFERENCES personas(idpersona),
+            CONSTRAINT fk_idhijo_cf FOREIGN KEY (idhijo) REFERENCES personas(idpersona)
+        ) ENGINE=INNODB;
 			
 		CREATE TABLE sispensiones(
 				idsp								INT AUTO_INCREMENT PRIMARY KEY,
@@ -208,19 +201,4 @@ USE recursoshumanos;
 				idpersona						INT							NOT NULL,		
 		CONSTRAINT fk_idpersona_sis FOREIGN KEY (idpersona) REFERENCES personas(idpersona)		
 		)ENGINE = INNODB;
-        CREATE TABLE afp_datos (
-            idafpdatos INT AUTO_INCREMENT PRIMARY KEY,
-            idsp INT NOT NULL,                           -- FK a sispensiones (la AFP de cada persona)
-            periodo VARCHAR(7) NOT NULL,                 -- Ej: "2025-08"
-            comision_fija DECIMAL(5,2) NULL,
-            comision_sobre_flujo DECIMAL(5,2) NULL,
-            comision_mixta_sobre_flujo DECIMAL(5,2) NULL,
-            comision_mixta_sobre_saldo DECIMAL(5,2) NULL,
-            comision_anual_sobre_saldo DECIMAL(5,2) NULL,
-            prima_de_seguro DECIMAL(5,2) NULL,
-            aporte_obligatorio DECIMAL(5,2) NULL,
-            remuneracion_maxima_asegurable DECIMAL(12,2) NULL,
-            CONSTRAINT fk_afp_sis FOREIGN KEY (idsp) REFERENCES sispensiones(idsp)
-        ) ENGINE=INNODB;
-
 			

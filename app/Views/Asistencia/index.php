@@ -5,7 +5,6 @@
     <h4>Asistencia Diaria</h4>
     <a href="<?= base_url('asistencia/permiso') ?>" class="btn btn-outline-secondary btn-sm mb-3">Permiso</a>
 
-    <!-- Filtros -->
     <form method="post" action="<?= base_url('asistencia') ?>" class="row g-2 mb-3" id="formFiltros">
       <div class="col-md-3">
         <label>Fecha Inicio</label>
@@ -20,12 +19,15 @@
         <input type="text" name="dni" value="<?= $dni ?? '' ?>" placeholder="Ingrese DNI" class="form-control">
       </div>
       <div class="col-md-3 d-flex align-items-end gap-2">
-        <button type="submit" class="btn btn-primary w-50">Filtrar</button>
+        <button type="submit" class="btn btn-primary w-50" id="btnFiltrar">Filtrar</button>
         <button type="button" class="btn btn-secondary w-50" id="btnLimpiar">Limpiar</button>
       </div>
     </form>
-
-    <!-- Tabla -->
+    
+    <button type="button" class="btn btn-success btn-sm mb-3" id="btnDescargarReporte">
+        <i class="bi bi-file-earmark-excel-fill"></i> Descargar Reporte Semanal (Excel)
+    </button>
+    
     <table id="tablaAsistencia" class="table table-sm table-striped table-bordered">
       <thead>
         <tr>
@@ -71,65 +73,50 @@
   </div>
 </div>
 
-<!-- DataTables CSS y JS -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css">
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
 
-<!-- Botones de exportación -->
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-
-<!-- Bootstrap Icons -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
 <script>
 $(document).ready(function() {
   $('#tablaAsistencia').DataTable({
     searching: false,
+    paging: true, // Mantener paginación
+    info: true,   // Mostrar información de registros
     language: {
       url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/es-ES.json"
     },
-    dom: 'Bfrtip',
-    buttons: [
-      {
-        extend: 'excelHtml5',
-        text: '<i class="bi bi-file-earmark-excel-fill"></i> Excel',
-        className: 'btn btn-success btn-sm',
-        title: 'ASISTENCIA DE LA EMPRESA YONDA & GRUPO HUARACA'
-      },
-      {
-        extend: 'pdfHtml5',
-        text: '<i class="bi bi-file-earmark-pdf-fill"></i> PDF',
-        className: 'btn btn-danger btn-sm',
-        orientation: 'landscape',
-        pageSize: 'A4',
-        title: 'ASISTENCIA DE LA EMPRESA YONDA & GRUPO HUARACA',
-        exportOptions: {
-        columns: ':visible' // exporta todas las columnas visibles
-    },
-        customize: function (doc) {
-          doc.styles.title = {
-            alignment: 'center',
-            fontSize: 14,
-            bold: true
-          };
-        }
-      }
-    ],
+    // Quitamos la opción DOM para los botones de DataTables, ya que usamos un botón personalizado
+    dom: 'lrtip', 
     scrollX: true
   });
 
-  // Botón limpiar filtros
+  // 1. Botón limpiar filtros
   $('#btnLimpiar').click(function() {
     $('#formFiltros')[0].reset();
+    // Simular el envío del formulario de filtro para recargar la página sin filtros
     $('#formFiltros').submit();
+  });
+
+  // 2. Botón de Descarga del Reporte Semanal
+  $('#btnDescargarReporte').click(function() {
+    // Almacena el ACTION original del formulario de filtros
+    let originalAction = $('#formFiltros').attr('action');
+    
+    // Cambia temporalmente el ACTION para apuntar al método de descarga
+    // Asumiendo que 'asistencia/descargar' mapea a tu método descargarAsistencia()
+    $('#formFiltros').attr('action', '<?= base_url('asistencia/descargar') ?>');
+    
+    // Envía el formulario con los filtros
+    $('#formFiltros').submit();
+    
+    // Vuelve a establecer el ACTION original después del envío (con un pequeño retraso para asegurar el envío)
+    setTimeout(function() {
+        $('#formFiltros').attr('action', originalAction);
+    }, 100); 
   });
 });
 </script>

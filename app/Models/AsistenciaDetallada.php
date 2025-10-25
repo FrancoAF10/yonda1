@@ -5,6 +5,7 @@ use CodeIgniter\Model;
 
 class AsistenciaDetallada extends Model
 {
+    // Apunta a tu tabla 'asistencias'
     protected $table = 'asistencias';
     protected $primaryKey = 'idasistencia';
 
@@ -21,8 +22,9 @@ class AsistenciaDetallada extends Model
         'tardanza_minutos',
         'exceso_refrigerio_minutos',
         'salida_anticipada_minutos',
+        'tipoasistencia',
         'observacion',
-        'minnolaborados' // 👈 agregado aquí
+        'minnolaborados'
     ];
 
     protected $validationRules = [

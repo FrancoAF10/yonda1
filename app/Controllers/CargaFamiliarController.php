@@ -3,9 +3,27 @@
 namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\CargaFamiliar;
+use App\Models\Personas;
 
+/**
+ * Controlador CargaFamiliarController
+ * 
+ * Gestiona las operaciones relacionadas con la carga familiar de los empleados,
+ * incluyendo registro de dependientes y búsqueda de personas por DNI.
+ * 
+ * @package App\Controllers
+ */
 class CargaFamiliarController extends BaseController
 {
+    /**
+     * Registra un nuevo dependiente en la carga familiar de un empleado
+     * 
+     * Valida y procesa el formulario de registro de carga familiar,
+     * incluyendo la carga opcional de un archivo de evidencia (imagen o PDF).
+     * Retorna la lista actualizada de carga familiar en formato JSON.
+     * 
+     * @return \CodeIgniter\HTTP\RedirectResponse|\CodeIgniter\HTTP\ResponseInterface
+     */
     public function crear()
     {
         $cargafamiliar = new CargaFamiliar();
@@ -34,17 +52,10 @@ class CargaFamiliarController extends BaseController
 
         // Preparar datos para insertar
         $data = [
-            "nombre" => $this->request->getVar('nombre'),
-            "apepaterno" => $this->request->getVar('apepaterno'),
-            "apematerno" => $this->request->getVar('apematerno'),
-            "fechanac" => $this->request->getVar('fechanac'),
-            "genero" => $this->request->getVar('genero'),
             "parentesco" => $this->request->getVar('parentesco'),
-            "estudia" => $this->request->getVar('estudia') ? 1 : 0,
-            "dependiente" => $this->request->getVar('dependiente') ? 1 : 0,
-            "tipodoc" => $this->request->getVar('tipodoc'),
             "evidencia" => $nombreArchivo,
-            "idpersona" => $idpersona
+            "idpersona" => $idpersona,
+            "idhijo" => $this->request->getVar('idhijo')
         ];
 
         $cargafamiliar->insert($data);
@@ -53,4 +64,44 @@ class CargaFamiliarController extends BaseController
 
         return $this->response->setJSON(['status' => 'ok', 'cargafamiliar' => $asigfamiliar]);
     }
+  /**
+   * Busca una persona por su número de documento
+   * 
+   * Realiza una búsqueda en la base de datos de personas utilizando
+   * el número de documento como criterio. Útil para autocompletar formularios
+   * o validar la existencia de dependientes antes de registrarlos.
+   * 
+   * @param mixed $numdoc Número de documento a buscar
+   * @return \CodeIgniter\HTTP\ResponseInterface
+   */
+  public function searchDNIPersonas($numdoc = null)
+  {
+    $persona = new Personas();
+    $this->response->setContentType('application/json');
+
+    if (empty($numdoc)) {
+      return $this->response->setJSON([
+        'success' => false,
+        'mensaje' => 'Debe indicar el Número de documento'
+      ]);
+    }
+
+    $registro = $persona->where('numdoc', $numdoc)->first();
+
+    if (!$registro) {
+      return $this->response->setJSON([
+        'success' => false,
+        'mensaje' => 'No se encontraron registros'
+      ]);
+    }
+
+    return $this->response->setJSON([
+      'success' => true,
+      'idpersona' => $registro['idpersona'],
+      'nombres' => $registro['nombres'],
+      'apepaterno' => $registro['apepaterno'],
+      'apematerno' => $registro['apematerno'],
+      'numdoc' => $registro['numdoc']
+    ]);
+  }
 }

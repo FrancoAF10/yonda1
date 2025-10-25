@@ -2,7 +2,7 @@
 
 <div class="pc-container my-2">
     <div class="pc-content">
-        <h2>Término de Contrato</h2>
+        <h2>Termino de Contrato</h2>
         <a href="<?= base_url('personas') ?>">Volver a la lista</a>
         
         <!-- Mostrar mensajes flash -->
@@ -74,4 +74,4 @@
     </div>
 </div>
 
-<?= $footer ?>
+    <?= $footer ?>

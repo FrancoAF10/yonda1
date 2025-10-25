@@ -99,12 +99,6 @@ class PersonasController extends BaseController
     $iddistrito = $this->request->getVar('iddistrito');
 
 
-    // Validar edad
-    $edad = (new DateTime())->diff(new DateTime($fechanac))->y;
-    if ($edad < 18) {
-      return redirect()->back()->withInput()->with('error', 'El empleado debe ser mayor de 18 años');
-    }
-
     // Validar duplicado de DNI
     if ($personas->where('numdoc', $numdoc)->first()) {
       return redirect()->back()->withInput()->with('error', 'El número de documento ya está registrado');
@@ -188,7 +182,7 @@ class PersonasController extends BaseController
   public function searchByDniAPI($dni = "")
   {
     $api_endpoint = "https://api.decolecta.com/v1/reniec/dni?numero=" . $dni;
-    $api_token = "sk_10065.Hn9jgip17XG1y0ACJbKS715QeDjhmECl";
+    $api_token = "sk_10065.YI6OCcaRNSNDpH1dlvk7M4dnMZ0tb59m";
     $content_type = "application/json";
 
     $ch = curl_init();
