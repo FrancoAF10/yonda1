@@ -10,8 +10,32 @@ use App\Models\Provincias;
 use App\Models\Distritos;
 use App\Models\Personas;
 use App\Models\Sucursal;
+/**
+ * Controlador ContratosController
+ * 
+ * Gestiona las operaciones relacionadas con contratos laborales,
+ * incluyendo creación, renovación y visualización de contratos
+ * activos y vencidos del personal.
+ * 
+ * @package App\Controllers
+ */
 class ContratosController extends BaseController
 {
+    /**
+     * Muestra la vista principal de contratos vencidos pendientes de renovación
+     * 
+     * Lista todos los contratos que han finalizado y están pendientes de
+     * renovación, permitiendo al área de RRHH gestionar las renovaciones.
+     * 
+     * @return string Vista renovacion/renovacion con listado de contratos vencidos
+     * 
+     * Variables pasadas a la vista:
+     * - contratosvencidos (array): Listado de contratos finalizados sin renovar
+     * - header (string): Vista del encabezado
+     * - footer (string): Vista del pie de página
+     * 
+     * @uses Contratos::Vista_Contratos_Vencidos() Para obtener contratos vencidos
+     */
     public function index(){
 
       $contrato=new Contratos();
@@ -20,6 +44,21 @@ class ContratosController extends BaseController
       $datos['footer'] = view("Layouts/footer");
       return view("Renovacion/renovacion", $datos);
     }
+    /**
+     * Muestra el formulario para crear un nuevo contrato
+     * 
+     * Carga la vista del formulario de registro de contrato con el listado
+     * de sucursales disponibles para asignar al empleado.
+     * 
+     * @param mixed $idpersona Identificador del empleado
+     * @return string Vista Contratos/registrar con formulario de nuevo contrato
+     * 
+     * Variables pasadas a la vista:
+     * - idpersona (int): ID del empleado
+     * - sucursal (array): Listado de sucursales ordenadas por ID
+     * - header (string): Vista del encabezado
+     * - footer (string): Vista del pie de página
+     */
     public function crearcontrato($idpersona=null){
         $sucursal=new Sucursal();
         $datos['idpersona'] = $idpersona;
@@ -28,6 +67,30 @@ class ContratosController extends BaseController
         $datos['footer'] = view("Layouts/footer");
         return view("Contratos/registrar", $datos);
     }
+    /**
+     * Procesa el registro de un nuevo contrato de personal
+     * 
+     * Valida los datos del formulario (fechas coherentes, valores numéricos positivos)
+     * y registra un nuevo contrato laboral en la base de datos.
+     * 
+     * @return \CodeIgniter\HTTP\RedirectResponse Redirección a la lista de personas
+     * 
+     * Datos POST esperados:
+     * - idpersona (int): ID del empleado
+     * - idcargo (int): ID del cargo asignado
+     * - fechainicio (date): Fecha de inicio del contrato (Y-m-d)
+     * - fechafin (date): Fecha de finalización del contrato (Y-m-d)
+     * - sueldobase (decimal): Salario base del empleado
+     * - toleranciadiaria (int): Minutos de tolerancia diaria
+     * - toleranciamensual (int): Minutos de tolerancia mensual
+     * 
+     * Validaciones:
+     * - La fecha de fin debe ser posterior o igual a la fecha de inicio
+     * - Todos los valores numéricos deben ser positivos
+     * - Los campos numéricos deben ser valores válidos
+     * 
+     * @uses Contratos::insert() Para guardar el nuevo contrato
+     */
     public function crearpersonal()
     {
         $contratos = new Contratos();
@@ -79,7 +142,39 @@ class ContratosController extends BaseController
     }
 
 
-    //VISTA
+    /**
+     * Muestra el formulario de renovación/nuevo contrato precargado con datos previos
+     * 
+     * Carga el formulario de contrato con la información del último contrato del empleado,
+     * incluyendo toda la jerarquía de ubicación (departamento > provincia > distrito > 
+     * sucursal > área > cargo) y parámetros contractuales previos para facilitar la renovación.
+     * También muestra el historial de contratos del empleado.
+     * 
+     * @param mixed $idpersona Identificador del empleado
+     * @return string Vista Renovacion/Nuevocontrato con formulario precargado
+     * 
+     * Variables pasadas a la vista:
+     * - persona (array): Datos completos del empleado
+     * - vencidos (array): Historial completo de contratos del empleado
+     * - departamentoSucursales (array): Listado de departamentos
+     * - provincias (array): Provincias del departamento seleccionado (si aplica)
+     * - distritos (array): Distritos de la provincia seleccionada (si aplica)
+     * - sucursales (array): Sucursales del distrito seleccionado (si aplica)
+     * - areas (array): Áreas de la sucursal seleccionada (si aplica)
+     * - cargos (array): Cargos del área seleccionada (si aplica)
+     * - iddepartamento, idprovincia, iddistrito, idsucursal, idarea, idcargo: IDs seleccionados
+     * - fechainicio, fechafin, sueldobase, toleranciadiaria, toleranciamensual: Datos del último contrato
+     * - header (string): Vista del encabezado
+     * - footer (string): Vista del pie de página
+     * 
+     * Comportamiento:
+     * - Si existe un contrato previo, precarga todos los campos con esos valores
+     * - Carga las listas dependientes en cascada basándose en el último contrato
+     * - Si no hay contrato previo, muestra el formulario vacío con listas iniciales vacías
+     * 
+     * @uses Personas::find() Para obtener datos del empleado
+     * @uses Contratos::getHistorialContratos() Para obtener historial de contratos
+     */
     public function nuevoContrato($idpersona=null){
         $personas    = new Personas();
         $contratos   = new Contratos();
@@ -181,7 +276,32 @@ class ContratosController extends BaseController
         return view("Renovacion/Nuevocontrato", $datos);
     }
 
-    //RENOVACION
+    /**
+     * Procesa la renovación de un contrato laboral
+     * 
+     * Valida y registra un nuevo contrato para un empleado existente,
+     * verificando que no exista duplicación de fechas y que los valores
+     * sean coherentes. No modifica contratos anteriores, crea uno nuevo.
+     * 
+     * 
+     * @return \CodeIgniter\HTTP\RedirectResponse Redirección a lista de contratos vencidos
+     * 
+     * Datos POST esperados:
+     * - idpersona (int): ID del empleado
+     * - idcargo (int): ID del cargo asignado
+     * - fechainicio (date): Fecha de inicio del nuevo contrato (Y-m-d)
+     * - fechafin (date): Fecha de finalización del nuevo contrato (Y-m-d)
+     * - sueldobase (decimal): Salario base del empleado
+     * - toleranciadiaria (int): Minutos de tolerancia diaria
+     * - toleranciamensual (int): Minutos de tolerancia mensual
+     * 
+     * Validaciones:
+     * - La fecha de fin debe ser posterior o igual a la fecha de inicio
+     * - Todos los valores numéricos deben ser positivos
+     * - No debe existir un contrato con las mismas fechas para el mismo empleado
+     * 
+     * @uses Contratos::insert() Para crear el nuevo contrato
+     */
     public function renovacion()
     {
         $contratos = new Contratos();

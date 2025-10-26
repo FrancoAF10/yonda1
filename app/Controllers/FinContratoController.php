@@ -4,9 +4,28 @@ namespace App\Controllers;
 use App\Models\Contratos;
 use App\Models\Personas;
 use App\Models\FinContrato;
-
+/**
+ * Controlador de Finalización de Contratos
+ * 
+ * Gestiona el proceso de terminación de contratos laborales,
+ * incluyendo despidos y finalizaciones con registro de motivos,
+ * severidad y evidencias. Actualiza el estado del contrato a 'Inactivo'.
+ * 
+ * @package App\Controllers
+ */
 class FinContratoController extends BaseController
 {
+    /**
+     * Vista principal para finalizar contrato de un trabajador
+     * 
+     * Carga la información del trabajador y su contrato más reciente
+     * para mostrar el formulario de finalización/despido.
+     * Obtiene el último contrato registrado ordenado por ID descendente.
+     * 
+     * @param mixed $idpersona ID del trabajador cuyo contrato se va a finalizar
+     * 
+     * @return string Vista del formulario de finalización de contrato
+     */
     public function indexDespido($idpersona){
         $personas = new Personas();
         $contratos= new Contratos();
@@ -23,7 +42,15 @@ class FinContratoController extends BaseController
         return view("personas/borrar", $datos);
     }
 
-
+    /**
+     * Registra la finalización/despido del contrato
+     * 
+     * Procesa el formulario de finalización de contrato realizando dos operaciones:
+     * 1. Actualiza el estado del contrato a 'Inactivo' en la tabla contratos
+     * 2. Inserta el registro de finalización con motivo, descripción, severidad y evidencia
+     * 
+     * @return \CodeIgniter\HTTP\ResponseInterface  Redirección a la lista de personas
+     */
     public function registrarDespido(){
 
         $terminocontrato= new FinContrato();

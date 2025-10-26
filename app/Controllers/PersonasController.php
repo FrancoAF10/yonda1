@@ -12,10 +12,28 @@ use App\Models\Asistencia;
 
 use DateTime;
 
+/**
+ * Controlador de Personas
+ * 
+ * Gestiona todas las operaciones relacionadas con el registro, consulta,
+ * actualización y visualización de información de trabajadores.
+ * Incluye búsqueda por DNI (local y API externa), gestión de contratos,
+ * calendario de eventos y datos complementarios (cuentas bancarias,
+ * sistema de pensiones, carga familiar).
+ * 
+ * @package App\Controllers
 
+ */
 class PersonasController extends BaseController
 {
-
+  /**
+   * Lista todos los empleados registrados
+   * 
+   * Muestra la vista principal con el listado completo de todos
+   * los trabajadores activos en el sistema.
+   * 
+   * @return string Vista con listado de empleados
+   */
   public function index()
   {
     $personas = new Personas();
@@ -24,12 +42,30 @@ class PersonasController extends BaseController
     $datos['footer'] = view("Layouts/footer");
     return view("personas/index", $datos);
   }
+  /**
+   * Vista de búsqueda de personas
+   * 
+   * Muestra el formulario para realizar búsquedas de trabajadores
+   * por su número de DNI
+   * @return string
+   */
   public function search()
   {
     $datos['header'] = view('Layouts/header');
     $datos['footer'] = view('Layouts/footer');
     return view('personas/search', $datos);
   }
+  /**
+   * Busca una persona por número de documento en la base de datos local
+   * 
+   * Realiza una búsqueda en la base de datos local del sistema
+   * y retorna la información básica del trabajador si existe.
+   * La cual nos sirve para validar si una persona ya esta registrada
+   * 
+   * @param mixed $numdoc Número de documento a buscar
+   * 
+   * @return \CodeIgniter\HTTP\ResponseInterface Respuesta JSON con datos o error
+   */
   public function searchDNIPersonas($numdoc = null)
   {
     $persona = new Personas();
@@ -61,7 +97,14 @@ class PersonasController extends BaseController
     ]);
   }
 
-
+  /**
+   * Vista del formulario de registro de nueva persona
+   * 
+   * Carga el formulario de registro con los catálogos necesarios:
+   * departamentos para la dirección del trabajador y sucursales disponibles.
+   * 
+   * @return string Vista del formulario de registro
+   */
   public function crear()
   {
     $departamentos = new Departamentos();
@@ -78,7 +121,15 @@ class PersonasController extends BaseController
     return view('Personas/registrar', $datos);
   }
 
+  /**
+   * Registra una nueva persona en el sistema
+   * 
+   * Procesa el formulario de registro validando que no exista
+   * duplicado de número de documento. Inserta todos los datos
+   * personales del trabajador en la base de datos.
 
+   * @return \CodeIgniter\HTTP\RedirectResponse Redirección con mensaje de éxito o error
+   */
   public function registrar()
   {
     $personas = new Personas();
@@ -128,7 +179,18 @@ class PersonasController extends BaseController
     return redirect()->to(base_url('personas/buscarpersona'))->with('success', 'Registro exitoso');
   }
 
+  /**
+   * Muestra información detallada de un trabajador
+   * 
+   * Presenta una vista completa con:
+   * - Datos personales del trabajador
+   * - Días restantes de contrato actual
+   * - Historial de contratos vencidos
+   * - Registro de asistencias
 
+   * @param mixed $idpersona ID del trabajador
+   * @return string Vista con información completa del trabajador
+   */
   public function info($idpersona)
   {
     $personas = new Personas();
@@ -145,12 +207,29 @@ class PersonasController extends BaseController
     $datos['footer'] = view("Layouts/footer");
     return view("personas/info", $datos);
   }
+  /**
+   * Vista del calendario de eventos
+   * 
+   * Muestra un calendario interactivo con eventos importantes:
+   * cumpleaños de trabajadores y vencimientos de contratos.
+   *
+   * @return string Vista del calendario
+   */
   public function calendar()
   {
     $datos['header'] = view("Layouts/header");
     $datos['footer'] = view("Layouts/footer");
     return view("personas/calendar", $datos);
   }
+  /**
+   * Obtiene datos de eventos para el calendario
+   * 
+   * Genera un array JSON con dos tipos de eventos:
+   * 1. Fin de contratos (color rojo) - Fecha exacta de vencimiento
+   * 2. Cumpleaños (color azul) - Fecha del cumpleaños en el año actual
+   *
+   * @return \CodeIgniter\HTTP\ResponseInterface Respuesta JSON con array de eventos
+   */
   public function calendarData()
   {
     $personas = new Personas();
@@ -178,7 +257,18 @@ class PersonasController extends BaseController
 
     return $this->response->setJSON($eventos);
   }
+  /**
+   * Busca una persona por DNI mediante API externa de RENIEC
+   * 
+   * Consulta los datos de una persona en la API de RENIEC (Perú)
+   * utilizando el número de DNI. Útil para autocompletar datos
+   * al registrar nuevos trabajadores.
+   * 
+   * Utiliza la API de decolecta.com con autenticación Bearer token.
 
+   * @param mixed $dni Número de DNI a consultar (8 dígitos)
+   * @return \CodeIgniter\HTTP\ResponseInterface Respuesta JSON con datos de RENIEC o error
+   */
   public function searchByDniAPI($dni = "")
   {
     $api_endpoint = "https://api.decolecta.com/v1/reniec/dni?numero=" . $dni;
@@ -220,7 +310,18 @@ class PersonasController extends BaseController
       'numerodoc' => $decoded_response['document_number']
     ]);
   }
-
+  /**
+   * Muestra datos complementarios de un trabajador
+   * 
+   * Presenta una vista con información adicional del trabajador:
+   * - Datos personales
+   * - Cuentas bancarias registradas (historial completo)
+   * - Sistema de pensiones (AFP/ONP)
+   * - Carga familiar registrada
+   *
+   * @param mixed $idpersona ID del trabajador
+   * @return string Vista con datos complementarios
+   */
   public function mostrardatos($idpersona = null)
   {
     $numerocuenta = new NumeroCuenta();
@@ -239,6 +340,15 @@ class PersonasController extends BaseController
     return view('Personas/actualizaciones', $datos);
   }
 
+  /**
+   * Actualiza los datos personales de un trabajador
+   * 
+   * Procesa el formulario de actualización de datos personales
+   * modificando la información básica del trabajador.
+   * No permite cambiar datos relacionados a contratos.
+   *
+   * @return \CodeIgniter\HTTP\ResponseInterface
+   */
   public function updatedata()
   {
     $personas = new Personas();
